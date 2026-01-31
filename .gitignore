@@ -1,0 +1,18 @@
+# Sensitive data
+.env
+.env.local
+.env.*.local
+
+# System files
+.DS_Store
+.vscode/
+.claude/
+
+# Data files
+data/
+
+# Dependency directories
+node_modules/
+
+# Logs
+*.log

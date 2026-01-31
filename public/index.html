@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Bread</title>
+
+	<link rel="stylesheet" href="css/general.css"></style>
+	<link rel="stylesheet" href="css/main.css"></style>
+	<link rel="stylesheet" href="css/add.css"></style>
+	<link rel="stylesheet" href="css/loading.css"></style>
+	<link rel="stylesheet" href="css/overview.css"></style>
+
+	<script src="js/general.js" defer></script>
+	<script src="js/overviewParser.js" defer></script>
+	<script src="js/app.js" defer></script>
+	<script src="js/add.js" defer></script>
+	<script src="js/overview.js" defer></script>
+	<script src="js/loading.js" defer></script>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+	<script src="resources/anime.iife.min.js"></script>
+	<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+	<main>
+		<!-- <nav>
+			<span class="active">Přidat místo</span>
+			<span>Přehled</span>
+		</nav> -->
+
+		<div id="content">
+			<div id="add" class="tab active">
+				<div id="add-map"></div>
+
+				<div class="wrap">
+					<div class="box info">
+						<p>Klikněte na požadované místo na mapě, které chcete analyzovat</p>
+					</div>
+
+					<div class="box picker">
+						<select id="interest-picker" name="interest">
+							<option value="" disabled selected>-- Zvolte možnost --</option>
+							<option value="student">Student</option>
+							<option value="rodic">Rodič</option>
+							<option value="pracujici">Pracující</option>
+						</select>
+					</div>
+
+					<div class="box button" onclick="searchAddress()">Hledej</div>
+				</div>
+			</div>
+
+			<div id="overview" class="tab">
+				<div id="report-map"></div>
+				<div id="categories"></div>
+			</div>
+		</div>
+
+	
+	</main>
+
+	<div id="loading">
+		<div id="background">
+			<div class="ball"></div>
+			<div class="ball"></div>
+			<div class="ball"></div>
+			<div class="ball"></div>
+			<div class="ball"></div>
+			<div class="ball"></div>
+
+			<div id="blur"></div>
+		</div>
+
+		<div id="rotator">
+			<span class="rotating" style="animation: 500ms forwards slide-in;">Pracuji</span>
+		</div>
+	</div>
+</body>
+</html>

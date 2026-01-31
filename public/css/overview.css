@@ -1,0 +1,133 @@
+#overview #categories {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 15px;
+	position: relative;
+}
+
+#overview #categories .category {
+	display: flex;
+	flex-direction: column;
+	padding: 21px;
+	border-radius: 10px;
+	background-color: var(--skillwhite);
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	gap: 5px;
+    justify-content: space-between;
+}
+
+#overview #categories .category h3 {
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--elm);
+}
+
+#overview #categories .category .score {
+	display: flex;
+	flex-direction: column;
+}
+
+#overview #categories .category .score .text {
+	display: none;
+}
+
+#overview #categories .category .score .progress {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	color: #A5A7AD;
+}
+
+#overview #categories .category .score .progress .bar {
+	flex: 1;
+	height: 10px;
+	background-color: #022B3A;
+	border-radius: 30px;
+	position: relative;
+	overflow: hidden;
+}
+
+#overview #categories .category .score .progress .bar .fill {
+	background-color: var(--elm);
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 50%;
+}
+
+#overview #categories .category .array {
+	display: flex;
+	flex-direction: column;
+}
+
+#overview #categories .category .array .item {
+	display: flex;
+	justify-content: space-between;
+}
+
+.overlay {
+	display: flex;
+	flex-direction: column;;
+	padding: 21px;
+    box-sizing: border-box;
+	border-radius: 10px;
+	background-color: #FFFFFC;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	gap: 30px;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.overlay h2 {
+    font-weight: 500;
+    font-size: 1.25rem;
+}
+
+.overlay .list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.overlay .list .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.overlay .list .item .name {
+    color: var(--elm);
+    font-weight: 400;
+}
+
+.overlay .list .item .name {
+    font-weight: 500;
+}
+
+.overlay button {
+    margin-top: auto;
+    appearance: none;
+    outline: none;
+    border: none;
+    background-color: var(--elm);
+    padding: 10px 20px;
+	border-radius: 10px;
+    color: var(--skillwhite);
+}
+
+.hidden {
+	display: none;
+}
+
+main #report-map {
+	flex: 1;
+	height: 100%;
+	border-radius: 10px;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+}

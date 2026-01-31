@@ -1,0 +1,40 @@
+@font-face {
+	font-family: 'Lexend';
+	src: url('../resources/Lexend.ttf');
+}
+
+:root {
+	--daintree: #022B3A;
+	--daintree-rgb: 2, 43, 58;
+	--elm: #1F7A8C;
+	--elm-rgb: 31, 122, 140;
+	--observatory: #048A81;
+	--observatory-rgb: 4, 138, 129;
+	--aluminium: #A5A7AD;
+	--aluminium-rgb: 165, 167, 173;
+	--tropicalblue: #BFDBF7;
+	--tropicalblue-rgb: 191, 219, 247;
+	--mystic: #EDF2F4;
+	--mystic-rgb: 237, 242, 244;
+	--aquahaze: #F2F6F7;
+	--aquahaze-rgb: 242, 246, 247;
+	--skillwhite: #FBFCFD;
+	--skillwhite-rgb: 251, 252, 253;
+}
+
+* {
+	padding: 0;
+	margin: 0;
+	font-family: Lexend;
+}
+
+body {
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: var(--daintree);
+	overflow: hidden;
+	background-color: var(--aquahaze);
+}
