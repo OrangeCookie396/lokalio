@@ -1,3 +1,50 @@
+// Create markers on the map for all POIs from API response
+function createPOIMarkers(apiResponse) {
+	console.log('createPOIMarkers received:', apiResponse);
+
+	// Handle both formats: direct categories or nested in openData.data
+	const data = apiResponse.openData?.data || apiResponse.data || apiResponse;
+
+	console.log('Extracted data:', data);
+	console.log('Transport data:', data.transport);
+	console.log('Healthcare data:', data.healthcare);
+
+	// ====== TRANSPORTATION ======
+	if (data.transport) {
+		const t = data.transport;
+		(t.bus_stops || []).forEach(stop =>
+			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#3b82f6')
+		);
+		(t.train_stations || []).forEach(stop =>
+			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#2563eb')
+		);
+	}
+
+	// ====== HEALTHCARE ======
+	if (data.healthcare) {
+		const h = data.healthcare;
+		(h.hospitals || []).forEach(hosp =>
+			createMarker(window.reportMap, hosp.coordinates.lat, hosp.coordinates.lon, '#ef4444')
+		);
+	}
+
+	// ====== EDUCATION ======
+	if (data.education) {
+		const e = data.education;
+		(e.schools || []).forEach(s =>
+			createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#10b981')
+		);
+	}
+
+	// ====== EMPLOYMENT ======
+	if (data.employment) {
+		const w = data.employment;
+		(w.industrial_zones || []).forEach(z =>
+			createMarker(window.reportMap, z.coordinates.lat, z.coordinates.lon, '#f59e0b')
+		);
+	}
+}
+
 function getInterestWeights() {
 	const interest = window.selectedInterest || '';
 
@@ -58,7 +105,8 @@ function getInterestWeights() {
 function parseReportData(input) {
 	const weights = getInterestWeights();
 	console.log(weights)
-	const data = input.data || {};
+	// Handle both formats: direct categories or nested in openData.data
+	const data = input.openData?.data || input.data || input;
 	const result = {};
 
 	// ====== TRANSPORTATION ======

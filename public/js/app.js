@@ -16,6 +16,11 @@ async function searchAddress() {
     // Add marker to the report map
     createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#3b82f6');
 
+    // Create markers for POIs on the map (pass the full response with openData)
+    if (result.openData) {
+      createPOIMarkers(result);
+    }
+
     generateReport(result);
 
     console.log("LLM response:", result);

@@ -49,8 +49,8 @@ function generateReport(data) {
 	overlay.classList.add('hidden');
 
 	for (const [key, categoryData] of Object.entries(data)) {
-		// Skip total_score - it's not a category
-		if (key === 'total_score') continue;
+		// Skip total_score and openData - they're not categories
+		if (key === 'total_score' || key === 'openData') continue;
 		const category = document.createElement('div');
 		category.className = 'category';
 
@@ -187,14 +187,13 @@ function getScoreText(score) {
 	return 'Výborný';
 }
 
-// Po vygenerování overlaye ho vyber
-const overlay = document.querySelector('.overlay');
-
 // Zavření po klávese Escape
 document.addEventListener('keydown', (e) => {
-	console.log("esc click")
 	if (e.key === 'Escape') {
-		overlay.classList.add('hidden');
+		const overlay = document.querySelector('.overlay');
+		if (overlay && !overlay.classList.contains('hidden')) {
+			overlay.classList.add('hidden');
+		}
 	}
 });
 

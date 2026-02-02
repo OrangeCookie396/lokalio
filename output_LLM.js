@@ -234,6 +234,9 @@ export async function getLLMResponse(lat, lon) {
       transformed.total_score = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
     }
 
+    // Include the raw openData so the frontend can access POI coordinates for markers
+    transformed.openData = result.openData;
+
     return transformed;
   }
 
