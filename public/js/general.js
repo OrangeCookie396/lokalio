@@ -1,15 +1,15 @@
 window.reportMap = L.map('report-map').setView([50.209, 15.832], 14);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 17
+	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 17
 }).addTo(window.reportMap);
 
 window.addMap = L.map('add-map').setView([50.209, 15.832], 14);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 17
+	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 17
 }).addTo(window.addMap);
 
 // Marker creator
@@ -40,25 +40,14 @@ function createMarker(map, lat, lon, color = '#007bff') {
 }
 
 // Navigace
-// const spans = document.querySelectorAll('nav span');
 const tabs = document.querySelectorAll('#content .tab');
 function switchTabs(index) {
-    // spans.forEach(s => s.classList.remove('active'));
-    tabs.forEach(t => t.classList.remove('active'));
+	tabs.forEach(t => t.classList.remove('active'));
 
-    // spans[index].classList.add('active');
-    tabs[index].classList.add('active');
+	tabs[index].classList.add('active');
 
-    setTimeout(() => {
+	setTimeout(() => {
 		window.reportMap.invalidateSize();
 		window.addMap.invalidateSize();
 	}, 100);
 }
-
-// (function initNavigation() {
-//     spans.forEach((span, index) => {
-//         span.addEventListener('click', () => {
-//             switchTabs(index);
-//         });
-//     });
-// })();

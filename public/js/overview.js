@@ -102,18 +102,18 @@ function generateReport(data) {
 
 			// List of details
 			const list = document.createElement('div');
-                list.classList.add('list');
+				list.classList.add('list');
 			categoryData.array.forEach(itemData => {
 				const listItem = document.createElement('div');
-                listItem.classList.add('item');
-                const itemName = document.createElement('span');
-                itemName.classList.add('name');
-                itemName.textContent = itemData.name;
-                const itemValue = document.createElement('span');
-                itemValue.classList.add('value');
+				listItem.classList.add('item');
+				const itemName = document.createElement('span');
+				itemName.classList.add('name');
+				itemName.textContent = itemData.name;
+				const itemValue = document.createElement('span');
+				itemValue.classList.add('value');
 				itemValue.textContent = itemData.value;
-                listItem.appendChild(itemName);
-                listItem.appendChild(itemValue);
+				listItem.appendChild(itemName);
+				listItem.appendChild(itemValue);
 				list.appendChild(listItem);
 			});
 			overlay.appendChild(list);
@@ -127,27 +127,6 @@ function generateReport(data) {
 			overlay.appendChild(closeBtn);
 		});
 
-		// Array dat
-		// const arrayDiv = document.createElement('div');
-		// arrayDiv.className = 'array';
-		// categoryData.array.forEach(itemData => {
-		// 	const item = document.createElement('div');
-		// 	item.className = 'item';
-
-		// 	const name = document.createElement('p');
-		// 	name.className = 'name';
-		// 	name.textContent = itemData.name;
-
-		// 	const value = document.createElement('p');
-		// 	value.className = 'value';
-		// 	value.textContent = itemData.value;
-
-		// 	item.appendChild(name);
-		// 	item.appendChild(value);
-		// 	arrayDiv.appendChild(item);
-		// });
-
-		// category.appendChild(arrayDiv);
 		categoriesContainer.appendChild(category);
 
 		// animace progress fill po renderu
@@ -196,17 +175,3 @@ document.addEventListener('keydown', (e) => {
 		}
 	}
 });
-
-
-// Zavření při kliknutí mimo overlay
-// window.addEventListener('click', (e) => {
-// 	console.log("okno klik")
-
-// 	// Pokud overlay není vidět, nic se neděje
-// 	if (overlay.classList.contains('hidden')) return;
-
-// 	// Pokud kliknutí NEBYLO na overlay ani na jeho potomka, schovej ho
-// 	if (!overlay.contains(e.target)) {
-// 		overlay.classList.add('hidden');
-// 	}
-// });

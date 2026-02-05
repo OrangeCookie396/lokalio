@@ -14,7 +14,7 @@
 	background-color: var(--skillwhite);
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 	gap: 5px;
-    justify-content: space-between;
+	justify-content: space-between;
 }
 
 #overview #categories .category h3 {
@@ -71,7 +71,7 @@
 	display: flex;
 	flex-direction: column;;
 	padding: 21px;
-    box-sizing: border-box;
+	box-sizing: border-box;
 	border-radius: 10px;
 	background-color: #FFFFFC;
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -84,40 +84,40 @@
 }
 
 .overlay h2 {
-    font-weight: 500;
-    font-size: 1.25rem;
+	font-weight: 500;
+	font-size: 1.25rem;
 }
 
 .overlay .list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 .overlay .list .item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .overlay .list .item .name {
-    color: var(--elm);
-    font-weight: 400;
+	color: var(--elm);
+	font-weight: 400;
 }
 
 .overlay .list .item .name {
-    font-weight: 500;
+	font-weight: 500;
 }
 
 .overlay button {
-    margin-top: auto;
-    appearance: none;
-    outline: none;
-    border: none;
-    background-color: var(--elm);
-    padding: 10px 20px;
+	margin-top: auto;
+	appearance: none;
+	outline: none;
+	border: none;
+	background-color: var(--elm);
+	padding: 10px 20px;
 	border-radius: 10px;
-    color: var(--skillwhite);
+	color: var(--skillwhite);
 }
 
 .hidden {

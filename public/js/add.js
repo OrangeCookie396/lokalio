@@ -1,15 +1,15 @@
 (function initAddMap() {
-    let selectedMarker = null;
+	let selectedMarker = null;
 
-    window.addMap.on('click', (e) => {
-        if (selectedMarker) {
-            window.addMap.removeLayer(selectedMarker);
-        }
+	window.addMap.on('click', (e) => {
+		if (selectedMarker) {
+			window.addMap.removeLayer(selectedMarker);
+		}
 
-        selectedMarker = createMarker(window.addMap, e.latlng.lat, e.latlng.lng, '#000000');
-        
-        inputCoordinates = [e.latlng.lat, e.latlng.lng];
-    });
+		selectedMarker = createMarker(window.addMap, e.latlng.lat, e.latlng.lng, '#000000');
+		
+		inputCoordinates = [e.latlng.lat, e.latlng.lng];
+	});
 })();
 
 document.addEventListener('DOMContentLoaded', () => {

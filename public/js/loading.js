@@ -52,14 +52,14 @@ function updateText() {
 setInterval(updateText, 2000);
 
 function startAnimation() {
-    loading.classList.add('active');
+	loading.classList.add('active');
 	loop = true;
-    balls.forEach((ball) => {
+	balls.forEach((ball) => {
 		animateShape(ball);
 	});
 }
 
 function stopAnimation() {
-    loading.classList.remove('active');
-    loop = false;
+	loading.classList.remove('active');
+	loop = false;
 }
