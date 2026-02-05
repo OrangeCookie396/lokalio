@@ -57,3 +57,41 @@ main #content .tab .box {
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 	gap: 5px;
 }
+
+#error-toast {
+	position: fixed;
+	bottom: 30px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 2000;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px 22px;
+	border-radius: 10px;
+	background-color: #fdecec;
+	border: 1px solid #e74c3c;
+	color: #c0392b;
+	box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 16px;
+	font-size: 0.9rem;
+	animation: toast-in 400ms ease forwards;
+}
+
+#error-toast.hidden {
+	display: none;
+}
+
+#error-toast button {
+	appearance: none;
+	border: none;
+	background: none;
+	color: #c0392b;
+	font-size: 1.1rem;
+	cursor: pointer;
+	padding: 0 2px;
+}
+
+@keyframes toast-in {
+	0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+	100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

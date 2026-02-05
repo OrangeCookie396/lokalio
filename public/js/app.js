@@ -1,32 +1,43 @@
 async function searchAddress() {
-  console.log("searchAddress triggered");
-  if (!inputCoordinates) {
-    alert("Please select a location on the map first.");
-    return;
-  }
+	console.log("searchAddress triggered");
 
-  startAnimation();
+	if (!inputCoordinates) {
+		showError("Nejprve vyberte místo kliknutím na mapu.");
+		return;
+	}
 
-  try {
-    const response = await fetch(`http://localhost:3000/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
-    const result = await response.json();
+	if (!window.selectedInterest) {
+		showError("Zvolte svůj profil (Student / Rodič / Pracující).");
+		return;
+	}
 
-    switchTabs(1);
+	startAnimation();
 
-    // Add marker to the report map
-    createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#3b82f6');
+	try {
+		const response = await fetch(`http://localhost:3000/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
 
-    // Create markers for POIs on the map (pass the full response with openData)
-    if (result.openData) {
-      createPOIMarkers(result);
-    }
+		if (!response.ok) {
+			const body = await response.json().catch(() => null);
+			throw new Error(body?.error || `Server vrátil chybu (${response.status})`);
+		}
 
-    generateReport(result);
+		const result = await response.json();
 
-    console.log("LLM response:", result);
-  } catch (err) {
-    console.error("Error fetching LLM response:", err);
-  } finally {
-    stopAnimation(); // ✅ always stops the animation
-  }
+		switchTabs(1);
+
+		createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#3b82f6');
+
+		if (result.openData) {
+			createPOIMarkers(result);
+		}
+
+		generateReport(result);
+
+		console.log("LLM response:", result);
+	} catch (err) {
+		console.error("Error fetching LLM response:", err);
+		showError("Nepodařilo se získat hodnocení. Zkuste to prosím znovu.");
+	} finally {
+		stopAnimation();
+	}
 }
