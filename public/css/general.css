@@ -3,23 +3,25 @@
 	src: url('../resources/Lexend.ttf');
 }
 
+@font-face {
+	font-family: 'Comodo';
+	src: url('../resources/Comodo-Regular.ttf');
+}
+
+/* https://coolors.co/palette/022b3a-1f7a8c-048a81-42606c-edf2f4-fbfcfd */
 :root {
-	--daintree: #022B3A;
-	--daintree-rgb: 2, 43, 58;
-	--elm: #1F7A8C;
-	--elm-rgb: 31, 122, 140;
-	--observatory: #048A81;
-	--observatory-rgb: 4, 138, 129;
-	--aluminium: #A5A7AD;
-	--aluminium-rgb: 165, 167, 173;
-	--tropicalblue: #BFDBF7;
-	--tropicalblue-rgb: 191, 219, 247;
-	--mystic: #EDF2F4;
-	--mystic-rgb: 237, 242, 244;
-	--aquahaze: #F2F6F7;
-	--aquahaze-rgb: 242, 246, 247;
-	--skillwhite: #FBFCFD;
-	--skillwhite-rgb: 251, 252, 253;
+	--jet: #022B3A;
+	--jet-rgb: 2, 43, 58;
+	--teal: #1F7A8C;
+	--teal-rgb: 31, 122, 140;
+	--cyan: #048A81;
+	--cyan-rgb: 4, 138, 129;
+	--slate: #42606C;
+	--slate-rgb: 66, 96, 108;
+	--platinum: #EDF2F4;
+	--platinum-rgb: 237, 242, 244;
+	--snow: #FBFCFD;
+	--snow-rgb: 251, 252, 253;
 }
 
 * {
