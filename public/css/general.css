@@ -10,6 +10,8 @@
 
 /* https://coolors.co/palette/022b3a-1f7a8c-048a81-42606c-edf2f4-fbfcfd */
 :root {
+	--black: #161C24;
+	--black-rgb: 22, 28, 36;
 	--jet: #022B3A;
 	--jet-rgb: 2, 43, 58;
 	--teal: #1F7A8C;
@@ -18,10 +20,14 @@
 	--cyan-rgb: 4, 138, 129;
 	--slate: #42606C;
 	--slate-rgb: 66, 96, 108;
+	--silver: #8A9DB0;
+	--silver-rgb: 138, 157, 176;
 	--platinum: #EDF2F4;
 	--platinum-rgb: 237, 242, 244;
 	--snow: #FBFCFD;
 	--snow-rgb: 251, 252, 253;
+	--error: #e74c3c;
+	--error-dark: #c0392b;
 }
 
 * {
@@ -36,7 +42,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: var(--daintree);
+	color: var(--jet);
 	overflow: hidden;
-	background-color: var(--aquahaze);
+	background-color: var(--jet);
 }

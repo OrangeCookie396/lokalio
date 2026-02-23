@@ -9,8 +9,8 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: var(--daintree);
-	color: var(--skillwhite);
+	background-color: var(--jet);
+	color: var(--snow);
 }
 
 #loading.active {
@@ -34,9 +34,9 @@
 	position: absolute;
 }
 
-#loading #background .ball:nth-child(2n) { background-color: #1F7A8C; }
-#loading #background .ball:nth-child(2n - 1) { background-color: var(--elm); }
-#loading #background .ball:nth-child(6) { background-color: #BFDBF7; }
+#loading #background .ball:nth-child(2n) { background-color: var(--teal); }
+#loading #background .ball:nth-child(2n - 1) { background-color: var(--teal); }
+#loading #background .ball:nth-child(6) { background-color: var(--platinum); }
 
 #loading #background #blur {
 	width: 100%;
@@ -55,7 +55,7 @@
 
 #loading #rotator .rotating {
 	z-index: 1;
-	color: var(--seasalt);
+	color: var(--snow);
 	flex: 1;
 	font-size: 2rem;
 	position: relative;
