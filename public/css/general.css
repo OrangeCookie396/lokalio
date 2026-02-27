@@ -36,13 +36,17 @@
 	font-family: Lexend;
 }
 
+::selection {
+	background-color: var(--teal);
+	color: var(--snow);
+}
+
 body {
-	height: 100vh;
-	width: 100vw;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	height: auto;
+	width: 100%;
+	display: block;
+	overflow-x: hidden;
+	overflow-y: auto;
 	color: var(--jet);
-	overflow: hidden;
-	background-color: var(--jet);
+	background-color: var(--snow);
 }

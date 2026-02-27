@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,112 +7,232 @@
 
 	<title>lokalio</title>
 
-	<link rel="stylesheet" href="css/general.css"></style>
-	<link rel="stylesheet" href="css/main.css"></style>
-	<link rel="stylesheet" href="css/add.css"></style>
-	<link rel="stylesheet" href="css/loading.css"></style>
-	<link rel="stylesheet" href="css/overview.css"></style>
-
-	<script src="js/error.js" defer></script>
-	<script src="js/general.js" defer></script>
-	<script src="js/overviewParser.js" defer></script>
-	<script src="js/app.js" defer></script>
-	<script src="js/add.js" defer></script>
-	<script src="js/overview.js" defer></script>
-	<script src="js/loading.js" defer></script>
-
-	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-	<script src="resources/anime.iife.min.js"></script>
-	<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	<link rel="stylesheet" href="css/general.css">
+	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	<main>
-		<nav>
-			<a href="/" id="logo">
-				<img src="img/logo-light.svg" alt="Logo">
+
+	<!-- Navigation -->
+	<nav class="landing-nav">
+		<a href="/" class="logo">
+			<img class="logo-light" src="img/logo-light.svg" alt="lokalio">
+			<img class="logo-dark" src="img/logo-dark.svg" alt="lokalio">
+		</a>
+		<a href="app.html" class="nav-cta">
+			Spustit aplikaci
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+		</a>
+	</nav>
+
+	<!-- Hero -->
+	<section class="hero">
+		<div class="atmosphere">
+			<div class="orb orb-1"></div>
+			<div class="orb orb-2"></div>
+			<div class="orb orb-3"></div>
+			<div class="orb orb-4"></div>
+			<div class="orb orb-5"></div>
+			<div class="orb orb-6"></div>
+		</div>
+		<h1>Najdi <span class="accent">ideální místo</span> pro život</h1>
+
+		<p class="subtitle">Analyzujeme okolní infrastrukturu, dopravu, zdravotnictví a další kritéria. Na základě otevřených dat vám pomůžeme zjistit kvalitu vašeho budoucího bydlení.</p>
+
+		<div class="cta-group">
+			<a href="app.html" class="btn-primary">
+				Prozkoumat lokaci
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 			</a>
+			<a href="#jak-to-funguje" class="btn-secondary">Jak to funguje?</a>
+		</div>
 
-			<div class="group">
-				<a href="/">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m21 21l-4.34-4.34"/><circle cx="11" cy="11" r="8"/></g></svg>
-					<span>Prozkoumat lokaci</span>
-				</a>
+		<p class="note">Zdarma · Bez registrace · Otevřená data</p>
 
-				<div class="divider"></div>
-				
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 0 1 7.38 16.75M12 6v6l4 2M2.5 8.875a10 10 0 0 0-.5 3M2.83 16a10 10 0 0 0 2.43 3.4M4.636 5.235a10 10 0 0 1 .891-.857M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
-					<span>Historie</span>
-				</a>
-				
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0zm.894.211v15M9 3.236v15"/></svg>
-					<span>Oblasti</span>
-				</a>
+		<div class="scroll-hint">
+			<div class="line"></div>
+		</div>
+	</section>
+
+	<!-- Light Content -->
+	<div class="light-content">
+
+	<!-- Features -->
+	<section class="section" id="funkce">
+		<div class="section-label">Kategorie hodnocení</div>
+		<h2>Co vše analyzujeme</h2>
+		<p class="section-desc">Každou lokaci posuzujeme v několika klíčových kategoriích, které ovlivňují kvalitu každodenního života.</p>
+
+		<div class="features-grid">
+			<div class="feature-card" data-delay="0">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/></svg>
+				</div>
+				<h3>Doprava</h3>
+				<p>Autobusové zastávky, vlakové stanice, dopravní spojení a dostupnost veřejné dopravy.</p>
 			</div>
 
-			<div class="group">
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 17H5M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></g></svg>
-					<span>Nastavení</span>
-				</a>
-
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></g></svg>
-					<span>Profil</span>
-				</a>
+			<div class="feature-card" data-delay="80">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg>
+				</div>
+				<h3>Zdravotnictví</h3>
+				<p>Nemocnice, praktické lékaře, dětské ambulance a další zdravotnická zařízení.</p>
 			</div>
-		</nav>
 
-		<div id="content">
-			<div id="add" class="tab active">
-				<div id="add-map"></div>
+			<div class="feature-card" data-delay="160">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+				</div>
+				<h3>Vzdělání</h3>
+				<p>Základní školy, umělecké školy a další vzdělávací instituce v okolí.</p>
+			</div>
 
-				<div class="wrap">
-					<div class="box info">
-						<p>Klikněte na požadované místo na mapě, které chcete analyzovat</p>
-					</div>
+			<div class="feature-card" data-delay="240">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
+				</div>
+				<h3>Práce</h3>
+				<p>Průmyslové zóny, pracovní příležitosti a ekonomická aktivita v dané oblasti.</p>
+			</div>
 
-					<div class="box picker">
-						<select id="interest-picker" name="interest">
-							<option value="" disabled selected>-- Zvolte možnost --</option>
-							<option value="student">Student</option>
-							<option value="rodic">Rodič</option>
-							<option value="pracujici">Pracující</option>
-						</select>
-					</div>
+			<div class="feature-card" data-delay="320">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+				</div>
+				<h3>Bezpečnost</h3>
+				<p>Záplavové zóny, rizikové oblasti a bezpečnostní faktory dané lokality.</p>
+			</div>
 
-					<div class="box button" onclick="searchAddress()">Hledej</div>
+			<div class="feature-card" data-delay="400">
+				<div class="icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94"/><line x1="20" x2="22" y1="2" y2="2"/><line x1="2" x2="22" y1="22" y2="22"/></svg>
+				</div>
+				<h3>Kvalita života</h3>
+				<p>Hluková zátěž a faktory ovlivňující celkový komfort života v daném místě.</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- How it works -->
+	<section class="section" id="jak-to-funguje">
+		<div class="section-label">Postup</div>
+		<h2>Jak to funguje</h2>
+		<p class="section-desc">Tři jednoduché kroky k úplnému přehledu o vaší vysněné lokalitě.</p>
+
+		<div class="steps">
+			<div class="step" data-delay="0">
+				<h3>Vyberte lokaci</h3>
+				<p>Klikněte na mapu a označte místo, které vás zajímá. Může to být adresa nemovitosti, kterou zvažujete, nebo vaše současné bydliště.</p>
+			</div>
+
+			<div class="step" data-delay="150">
+				<h3>Analyzujeme okolí</h3>
+				<p>Náš systém zpracuje desítky datových sad z otevřených dat a pomocí AI vyhodnotí kvalitu okolí ve všech kategoriích.</p>
+			</div>
+
+			<div class="step" data-delay="300">
+				<h3>Získejte přehled</h3>
+				<p>Obdržíte podrobné hodnocení s vizualizací na mapě a skóre pro každou kategorii. Všechno přehledně na jednom místě.</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Data Banner -->
+	<div class="data-banner">
+		<div class="banner-orb banner-orb-1"></div>
+		<div class="banner-orb banner-orb-2"></div>
+		<div class="banner-inner">
+			<div class="banner-text">
+				<div class="section-label">Data</div>
+				<h2>Postaveno na otevřených datech</h2>
+				<p>Využíváme datové sady Královehradeckého kraje pro přesné a aktuální hodnocení každé lokality.</p>
+			</div>
+			<div class="banner-stats">
+				<div class="stat">
+					<div class="number">60+</div>
+					<div class="label">Datasetů</div>
+				</div>
+				<div class="stat-divider"></div>
+				<div class="stat">
+					<div class="number">6</div>
+					<div class="label">Kategorií</div>
 				</div>
 			</div>
+		</div>
+	</div>
 
-			<div id="overview" class="tab">
-				<div id="report-map"></div>
-				<div id="categories"></div>
+	<!-- Pro koho -->
+	<section class="section" id="pro-koho">
+		<div class="section-label">Profily</div>
+		<h2>Pro koho je lokalio</h2>
+		<p class="section-desc">Výsledky přizpůsobujeme vaší životní situaci. Každý profil zdůrazňuje jiné kategorie.</p>
+
+		<div class="profiles">
+			<div class="profile-card" data-delay="0">
+				<div class="profile-icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+				</div>
+				<h3>Student</h3>
+				<p>Důraz na dostupnost škol, veřejnou dopravu a cenovou přístupnost okolí.</p>
+			</div>
+
+			<div class="profile-card" data-delay="100">
+				<div class="profile-icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11" r="3"/><path d="M17.5 21H6.5a1.5 1.5 0 0 1-1.13-2.5C7 16.5 9 15 12 15s5 1.5 6.63 3.5A1.5 1.5 0 0 1 17.5 21"/><path d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0"/></svg>
+				</div>
+				<h3>Rodič</h3>
+				<p>Prioritou je bezpečnost, blízkost dětských lékařů, škol a klidné prostředí.</p>
+			</div>
+
+			<div class="profile-card" data-delay="200">
+				<div class="profile-icon">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+				</div>
+				<h3>Pracující</h3>
+				<p>Klíčová je dojížděcí vzdálenost, dopravní infrastruktura a pracovní příležitosti.</p>
 			</div>
 		</div>
-	</main>
+	</section>
 
-	<div id="error-toast" class="hidden">
-		<span id="error-message"></span>
-		<button onclick="dismissError()">&#10005;</button>
-	</div>
+	<!-- Coverage -->
+	<section class="section coverage" id="pokryti">
+		<div class="coverage-content">
+			<div class="coverage-text">
+				<div class="section-label">Pokrytí</div>
+				<h2>Královehradecký kraj</h2>
+				<p class="section-desc">Aktuálně pokrýváme celý Královehradecký kraj. Data průběžně aktualizujeme.</p>
 
-	<div id="loading">
-		<div id="background">
-			<div class="ball"></div>
-			<div class="ball"></div>
-			<div class="ball"></div>
-			<div class="ball"></div>
-			<div class="ball"></div>
-			<div class="ball"></div>
-
-			<div id="blur"></div>
+				<div class="coverage-cities">
+					<span class="city city-main" data-delay="0">Hradec Králové</span>
+					<span class="city" data-delay="50">Náchod</span>
+					<span class="city" data-delay="100">Trutnov</span>
+					<span class="city" data-delay="150">Jičín</span>
+					<span class="city" data-delay="200">Rychnov nad Kněžnou</span>
+					<span class="city" data-delay="250">Dvůr Králové</span>
+					<span class="city" data-delay="300">Jaroměř</span>
+					<span class="city" data-delay="350">Nové Město nad Metují</span>
+					<span class="city" data-delay="400">Hořice</span>
+					<span class="city" data-delay="450">Česká Skalice</span>
+					<span class="city" data-delay="500">Broumov</span>
+					<span class="city" data-delay="550">a další…</span>
+				</div>
+			</div>
+			<div class="coverage-map">
+				<img src="img/kralovehradecky_kraj.svg" alt="Královehradecký kraj">
+			</div>
 		</div>
+	</section>
 
-		<div id="rotator">
-			<span class="rotating" style="animation: 500ms forwards slide-in;">Pracuji</span>
+	<!-- Footer -->
+	<footer class="landing-footer">
+		<div class="footer-logo">
+			<img src="img/logo-dark.svg" alt="lokalio">
 		</div>
-	</div>
+	</footer>
+
+	</div><!-- .light-content -->
+
+	<script src="js/script.js" defer></script>
+
 </body>
 </html>
