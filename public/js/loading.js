@@ -10,9 +10,11 @@ balls.forEach((ball) => {
 let loop = false;
 
 function animateShape(el) {
+	const rangeX = (window.innerWidth - 500) / 2;
+	const rangeY = (window.innerHeight - 500) / 2;
 	animate(el, {
-		translateX: utils.random(-600, 600),
-		translateY: utils.random(-600, 600),
+		translateX: utils.random(-rangeX, rangeX),
+		translateY: utils.random(-rangeY, rangeY),
 		scale: 1 + utils.random(0, 1, true),
 		opacity: utils.random(0.2, 1, true),
 		duration: utils.random(1000, 3000),
