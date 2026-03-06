@@ -3,7 +3,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "openai": "^6.4.0"
+    "openai": "^6.4.0",
+    "proj4": "^2.20.3"
   },
   "name": "project",
   "version": "1.0.0",
