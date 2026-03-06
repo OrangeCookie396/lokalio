@@ -10,6 +10,7 @@
 
 # Data files
 data/
+ideas/
 
 # Dependency directories
 node_modules/
