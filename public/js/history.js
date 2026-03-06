@@ -90,7 +90,7 @@
 	document.addEventListener('keydown', e => { if (e.key === 'Escape') historyClose(); });
 
 	// Hook nav "Historie" link
-	document.querySelector('nav .nav-links a[href="#"]')?.addEventListener('click', e => {
+	document.querySelector('nav .links a[href="#"], nav .nav-links a[href="#"]')?.addEventListener('click', e => {
 		e.preventDefault();
 		historyOpen();
 	});
