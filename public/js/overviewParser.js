@@ -1,15 +1,16 @@
 function getInterestWeights() {
-	const interest = window.selectedInterest || '';
-	switch (interest) {
-		case 'student':
-			return { transportation: 1.1, medicalcare: 1.0, recreation: 1.1, education: 1.3, work: 1.0, qol: 1.0 };
-		case 'rodina':
-			return { transportation: 1.1, medicalcare: 1.2, recreation: 1.0, education: 1.0, work: 0.9, qol: 1.3 };
-		case 'pracujici':
-			return { transportation: 1.2, medicalcare: 1.0, recreation: 0.9, education: 0.7, work: 1.4, qol: 1.1 };
-		default:
-			return { transportation: 1, medicalcare: 1, recreation: 1, education: 1, work: 1, qol: 1 };
-	}
+	// Sliders order in DOM: doprava, školství, zdravotnictví, sport, příroda, obchody
+	const sliders = [...document.querySelectorAll('.category-slider')].map(s => parseInt(s.value) || 3);
+	// Convert 1–5 preference to multiplier: 1→0.6, 3→1.0, 5→1.4
+	const w = v => 0.6 + (v - 1) * 0.2;
+	return {
+		transportation: w(sliders[0]),
+		education:      w(sliders[1]),
+		medicalcare:    w(sliders[2]),
+		recreation:     w(sliders[3]),
+		qol:            w(sliders[4]),
+		work:           w(sliders[5]),
+	};
 }
 
 // Convert 0-5 score to 0-100
@@ -30,6 +31,26 @@ function fmt(m) {
 function dist(leaf) {
 	return leaf?.entities?.[0]?.distance_m ?? null;
 }
+
+// Create marker and store it under a category key for highlight support
+function addCategoryMarker(category, lat, lon, color) {
+	const m = createMarker(window.reportMap, lat, lon, color);
+	if (!m) return;
+	if (!window.categoryMarkers[category]) window.categoryMarkers[category] = [];
+	window.categoryMarkers[category].push(m);
+	window.allReportMarkers.push(m);
+}
+
+// Highlight one category's markers; pass null to reset all
+window.highlightCategoryMarkers = function(key) {
+	const catMarkers = window.categoryMarkers || {};
+	const highlighted = key ? (catMarkers[key] || []) : null;
+	Object.values(catMarkers).flat().forEach(m => {
+		m.setOpacity(!highlighted || highlighted.includes(m) ? 1 : 0.15);
+	});
+	// User location always stays at full opacity
+	if (window.userLocationMarker) window.userLocationMarker.setOpacity(1);
+};
 
 function parseReportData(input) {
 	const weights = getInterestWeights();
@@ -53,8 +74,8 @@ function parseReportData(input) {
 			]
 		};
 
-		busEntities.forEach(e => e.lat && createMarker(window.reportMap, e.lat, e.lon, '#3b82f6'));
-		trainEntities.forEach(e => e.lat && createMarker(window.reportMap, e.lat, e.lon, '#2563eb'));
+		busEntities.forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#3b82f6'));
+		trainEntities.forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#2563eb'));
 	}
 
 	// ====== ZDRAVOTNICTVÍ ======
@@ -75,11 +96,11 @@ function parseReportData(input) {
 		};
 
 		const hosp0 = h.hospitals?.entities?.[0];
-		if (hosp0?.lat) createMarker(window.reportMap, hosp0.lat, hosp0.lon, '#ef4444');
+		if (hosp0?.lat) addCategoryMarker('medicalcare', hosp0.lat, hosp0.lon, '#ef4444');
 		const da0 = h.doctor_adult?.entities?.[0];
-		if (da0?.lat) createMarker(window.reportMap, da0.lat, da0.lon, '#f87171');
+		if (da0?.lat) addCategoryMarker('medicalcare', da0.lat, da0.lon, '#f87171');
 		const dc0 = h.doctor_child?.entities?.[0];
-		if (dc0?.lat) createMarker(window.reportMap, dc0.lat, dc0.lon, '#fca5a5');
+		if (dc0?.lat) addCategoryMarker('medicalcare', dc0.lat, dc0.lon, '#fca5a5');
 	}
 
 	// ====== REKREACE ======
@@ -141,7 +162,7 @@ function parseReportData(input) {
 		};
 
 		const iz0 = w.industrial_zone?.entities?.[0];
-		if (iz0?.lat) createMarker(window.reportMap, iz0.lat, iz0.lon, '#f59e0b');
+		if (iz0?.lat) addCategoryMarker('work', iz0.lat, iz0.lon, '#f59e0b');
 	}
 
 	// ====== QoL ======

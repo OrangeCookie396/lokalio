@@ -233,7 +233,7 @@ function generateReport(data) {
 		});
 		card.appendChild(statsDiv);
 
-		card.addEventListener('click', () => showDetail(cat, meta));
+		card.addEventListener('click', () => showDetail(cat, meta, key));
 		grid.appendChild(card);
 	}
 
@@ -254,7 +254,8 @@ function generateReport(data) {
 	}));
 }
 
-function showDetail(cat, meta) {
+function showDetail(cat, meta, key = null) {
+	window.highlightCategoryMarkers?.(key);
 	const panel = document.getElementById('cat-detail-panel');
 	panel.innerHTML = '';
 
@@ -265,7 +266,10 @@ function showDetail(cat, meta) {
 	const backBtn = document.createElement('button');
 	backBtn.className = 'cat-detail-back';
 	backBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7m7 7H5"/></svg>`;
-	backBtn.addEventListener('click', () => panel.classList.remove('visible'));
+	backBtn.addEventListener('click', () => {
+		panel.classList.remove('visible');
+		window.highlightCategoryMarkers?.(null);
+	});
 	header.appendChild(backBtn);
 
 	const titleDiv = document.createElement('div');
@@ -330,5 +334,6 @@ function showDetail(cat, meta) {
 document.addEventListener('keydown', e => {
 	if (e.key === 'Escape') {
 		document.getElementById('cat-detail-panel')?.classList.remove('visible');
+		window.highlightCategoryMarkers?.(null);
 	}
 });
