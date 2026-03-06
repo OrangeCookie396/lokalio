@@ -4,7 +4,8 @@ import "dotenv/config";
 const client = new AzureOpenAI({
 	endpoint: process.env.AZURE_ENDPOINT,
 	apiKey: process.env.AZURE_OPENAI_KEY,
-	deployment: process.env.AZURE_DEPLOYMENT_NAME || process.env.AZURE_MODEL_NAME,
+	deployment:
+		process.env.AZURE_DEPLOYMENT_NAME || process.env.AZURE_MODEL_NAME,
 	apiVersion: "2024-12-01-preview",
 });
 
@@ -41,9 +42,9 @@ export async function generateSummary(result) {
 		const response = await client.chat.completions.create({
 			messages: [
 				{
-					role: "developer",
+					role: "system",
 					content:
-						"Jsi analytik kvality bydlení v Královéhradeckém kraji. Na základě hodnocení lokality (1-5, kde 5 je nejlepší) napiš stručné shrnutí v češtině. Vyzdvihni silné a slabé stránky. Maximálně 3-4 věty. Piš přímo, bez úvodu. Nepoužívej emoji.",
+						"Jsi místní znalec a poradce pro bydlení v Královéhradeckém kraji. Dostaneš interní hodnocení lokality a tvým úkolem je napsat krátké shrnutí pro běžného člověka, který zvažuje bydlení v dané lokalitě. Pravidla: - Piš přirozeně, jako by ses bavil s kamarádem – žádný formální nebo robotický tón - NIKDY nezmiňuj čísla, skóre, body ani hodnocení – pracuj jen s jejich významem - Vyzdvihni 1-2 silné stránky a upozorni na případné slabiny - Maximálně 3-4 věty - Bez úvodu, rovnou k věci - Pouze česky",
 				},
 				{
 					role: "user",
