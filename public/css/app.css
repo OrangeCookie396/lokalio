@@ -82,6 +82,87 @@ main #content .tab .box {
 	gap: 5px;
 }
 
+/* ── Address search ──────────────────────────────── */
+
+#address-search {
+	position: relative;
+	flex: 1;
+}
+
+#address-search-inner {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--snow, #fff);
+	border-radius: 10px;
+	padding: 10px 14px;
+	color: var(--slate, #666);
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+#address-input {
+	flex: 1;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-size: 0.95rem;
+	color: inherit;
+	font-family: inherit;
+	min-width: 0;
+}
+
+#address-input::placeholder {
+	color: #aaa;
+}
+
+#address-suggestions {
+	list-style: none;
+	margin: 0 0 6px;
+	padding: 0;
+	background: var(--snow, #fff);
+	border-radius: 10px;
+	overflow: hidden;
+	max-height: 260px;
+	overflow-y: auto;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+#address-suggestions:empty {
+	display: none;
+}
+
+#address-suggestions li {
+	padding: 10px 14px;
+	font-size: 0.88rem;
+	cursor: pointer;
+	border-top: 1px solid rgba(0,0,0,0.06);
+	line-height: 1.4;
+	color: var(--jet, #222);
+}
+
+#address-suggestions li:first-child {
+	border-top: none;
+}
+
+#address-suggestions li:hover,
+#address-suggestions li.active {
+	background: rgba(59,130,246,0.08);
+}
+
+#address-suggestions li .sug-main {
+	font-weight: 500;
+}
+
+#address-suggestions li .sug-sub {
+	color: #888;
+	font-size: 0.82rem;
+}
+
 #error-toast {
 	position: fixed;
 	bottom: 30px;

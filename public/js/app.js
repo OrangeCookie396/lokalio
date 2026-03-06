@@ -37,8 +37,8 @@ async function searchAddress() {
 		window.allReportMarkers = [];
 		window.categoryMarkers = {};
 
-		// User location marker — bigger and distinct
-		const userMarker = createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#1d4ed8', 52);
+		// User location marker — bigger and distinct color
+		const userMarker = createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#ec4899', 52);
 		if (userMarker) {
 			window.allReportMarkers.push(userMarker);
 			window.userLocationMarker = userMarker;

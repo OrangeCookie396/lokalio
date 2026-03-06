@@ -131,6 +131,16 @@ function parseReportData(input) {
 				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)) },
 			]
 		};
+
+		[
+			ca.culture_centre, ca.library, ca.museum_and_gallery, ca.theatre_and_orchestra,
+			el.cinema, el.amusement_centre, el.free_time_centre,
+			hs.castle, hs.chateau,
+			nat.nature_curiosity, wl.spa,
+		].forEach(leaf => {
+			const e0 = leaf?.entities?.[0];
+			if (e0?.lat) addCategoryMarker('recreation', e0.lat, e0.lon, '#f97316');
+		});
 	}
 
 	// ====== VZDĚLÁNÍ ======
@@ -148,6 +158,11 @@ function parseReportData(input) {
 				{ name: 'ZUŠ', value: fmt(dist(e.art_school)) },
 			]
 		};
+
+		[s.kindergarten, s.primary, s.high, s.university, e.art_school].forEach(leaf => {
+			const e0 = leaf?.entities?.[0];
+			if (e0?.lat) addCategoryMarker('education', e0.lat, e0.lon, '#10b981');
+		});
 	}
 
 	// ====== PRÁCE ======
