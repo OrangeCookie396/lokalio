@@ -11,6 +11,12 @@ const CATEGORY_META = {
 		bg: 'rgba(239,68,68,0.12)',
 		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg>`
 	},
+	recreation: {
+		name: 'Rekreace',
+		color: '#f97316',
+		bg: 'rgba(249,115,22,0.12)',
+		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`
+	},
 	education: {
 		name: 'Vzdělání',
 		color: '#10b981',
@@ -18,22 +24,16 @@ const CATEGORY_META = {
 		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>`
 	},
 	work: {
-		name: 'Zaměstnanost',
+		name: 'Práce',
 		color: '#f59e0b',
 		bg: 'rgba(245,158,11,0.12)',
 		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12h.01M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m14 7a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>`
 	},
-	safety: {
-		name: 'Bezpečnost',
+	qol: {
+		name: 'Kvalita života',
 		color: '#8b5cf6',
 		bg: 'rgba(139,92,246,0.12)',
 		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>`
-	},
-	qualityOfLife: {
-		name: 'Klidnost',
-		color: '#06b6d4',
-		bg: 'rgba(6,182,212,0.12)',
-		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 0 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 0 1 11 8H2"/><path d="M12.6 19.4A2 2 0 0 0 14 16H2"/></svg>`
 	}
 };
 
@@ -93,7 +93,7 @@ function generateReport(data) {
 	const hero = document.createElement('div');
 	hero.className = 'report-hero';
 
-	const { svg: heroSvg, fill: heroFill, circ: heroCirc } = makeSVGRing(96, '#ffffff', 8, 0.2);
+	const { svg: heroSvg, fill: heroFill, circ: heroCirc } = makeSVGRing(72, '#ffffff', 7, 0.2);
 	rings.push({ fill: heroFill, circ: heroCirc, score: total });
 
 	const heroRing = document.createElement('div');
@@ -136,6 +136,37 @@ function generateReport(data) {
 
 	hero.appendChild(heroInfo);
 	container.appendChild(hero);
+
+	// ── Summary accordion ──────────────────────────────
+	const summary = data.summary || (data.openData?.data || data.data || data).summary || null;
+	if (summary) {
+		const accordion = document.createElement('div');
+		accordion.className = 'summary-accordion';
+
+		const btn = document.createElement('button');
+		btn.className = 'summary-banner';
+		btn.innerHTML = `
+			<span class="summary-banner-left">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+				Shrnutí AI
+			</span>
+			<svg class="summary-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+		`;
+
+		const body = document.createElement('div');
+		body.className = 'summary-dropdown-body';
+		body.textContent = summary;
+
+		btn.addEventListener('click', () => {
+			const open = accordion.classList.toggle('open');
+			body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+			grid.style.display = open ? 'none' : 'grid';
+		});
+
+		accordion.appendChild(btn);
+		accordion.appendChild(body);
+		container.appendChild(accordion);
+	}
 
 	// ── Category grid ──────────────────────────────────
 	const grid = document.createElement('div');
@@ -208,11 +239,12 @@ function generateReport(data) {
 
 	container.appendChild(grid);
 
-	// ── Detail panel (offscreen) ───────────────────────
+	// ── Detail panel (slides from right) ──────────────
 	const detailPanel = document.createElement('div');
 	detailPanel.className = 'cat-detail';
 	detailPanel.id = 'cat-detail-panel';
 	container.appendChild(detailPanel);
+
 
 	// ── Animate all rings ──────────────────────────────
 	requestAnimationFrame(() => requestAnimationFrame(() => {
