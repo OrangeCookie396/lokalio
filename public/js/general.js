@@ -42,6 +42,9 @@ function createMarker(map, lat, lon, color = '#007bff') {
 
 // Navigace
 const tabs = document.querySelectorAll('#content .tab');
+const nav = document.querySelector('nav');
+document.documentElement.style.setProperty('--nav-height', nav.offsetHeight + 'px');
+
 function switchTabs(index) {
 	tabs.forEach(t => t.classList.remove('active'));
 

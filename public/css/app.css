@@ -5,6 +5,26 @@ body {
 	background-color: var(--platinum);
 }
 
+nav {
+	background-color: transparent;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+}
+
+nav::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+	-webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+	z-index: -1;
+}
+
 main {
 	height: 100vh;
 	width: 100vw;
@@ -35,6 +55,21 @@ main #content .tab {
 
 main #content .tab.active {
 	display: flex;
+}
+
+main #content #profile.active {
+	overflow-y: auto;
+	padding-top: var(--nav-height, 88px);
+	align-items: flex-start;
+	flex-direction: column;
+	width: 100%;
+}
+
+main #content #overview.active {
+	overflow-y: auto;
+	padding-top: var(--nav-height, 88px);
+	align-items: flex-start;
+	width: 100%;
 }
 
 main #content .tab .box {
