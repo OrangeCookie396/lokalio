@@ -1,9 +1,15 @@
-const nav = document.querySelector('.landing-nav');
+const nav = document.querySelector('nav');
 const hero = document.querySelector('.hero');
-window.addEventListener('scroll', () => {
+
+function updateNav() {
 	nav.classList.toggle('scrolled', window.scrollY > 60);
-	nav.classList.toggle('past-hero', window.scrollY > hero.offsetHeight - 80);
-});
+	const isPastHero = window.scrollY > hero.offsetHeight - 80;
+	nav.classList.toggle('past-hero', isPastHero);
+	nav.classList.toggle('over-hero', !isPastHero);
+}
+
+window.addEventListener('scroll', updateNav);
+updateNav();
 
 const observer = new IntersectionObserver((entries) => {
 	entries.forEach(entry => {

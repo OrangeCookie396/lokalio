@@ -3,12 +3,6 @@
 	src: url('../resources/Lexend.ttf');
 }
 
-@font-face {
-	font-family: 'Comodo';
-	src: url('../resources/Comodo-Regular.ttf');
-}
-
-/* https://coolors.co/palette/022b3a-1f7a8c-048a81-42606c-edf2f4-fbfcfd */
 :root {
 	--black: #161C24;
 	--black-rgb: 22, 28, 36;
@@ -49,4 +43,86 @@ body {
 	overflow-y: auto;
 	color: var(--jet);
 	background-color: var(--snow);
+	scroll-behavior: smooth;
+}
+
+nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 48px;
+	transition: background-color 400ms ease, backdrop-filter 400ms ease, box-shadow 400ms ease;
+	background-color: var(--snow);
+}
+
+nav .logo {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+nav .logo img {
+	height: 48px;
+	width: auto;
+	transition: opacity 300ms ease;
+}
+
+nav .links {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+}
+
+nav .links a {
+	padding: 12px 24px;
+	text-decoration: none;
+	color: var(--slate);
+	font-size: 1rem;
+	transition: background-color 200ms ease, color 200ms ease;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border-radius: 100px;
+	white-space: nowrap;
+}
+
+nav .links a:hover {
+	background-color: rgba(var(--silver-rgb), 0.2);
+	color: var(--night);
+}
+
+nav .links a.primary {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 24px;
+	border-radius: 100px;
+	background: var(--jet);
+	border: 1px solid var(--jet);
+	color: var(--snow);
+	text-decoration: none;
+	font-family: Lexend;
+	font-size: 0.88rem;
+	font-weight: 400;
+	letter-spacing: 0.02em;
+	transition: background 300ms ease, border-color 300ms ease, color 300ms ease;
+}
+
+nav .links a svg {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+nav .links .primary:hover {
+	background: var(--teal);
+	border-color: var(--teal);
+}
+
+nav .links .primary svg {
+	width: 16px;
+	height: 16px;
+	transition: transform 300ms ease;
 }
