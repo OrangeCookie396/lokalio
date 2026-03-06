@@ -367,7 +367,7 @@ main #report-map {
 	margin: 0;
 	padding: 0 18px 8px;
 	max-height: 0;
-	overflow: hidden;
+	overflow-y: auto;
 	transition: max-height 0.25s ease;
 	background: var(--snow);
 	border-bottom: 1px solid rgba(var(--silver-rgb), 0.12);
@@ -405,6 +405,28 @@ main #report-map {
 	font-weight: 600;
 	color: var(--slate);
 	flex-shrink: 0;
+}
+
+.ent-mappable {
+	cursor: pointer;
+}
+
+.ent-mappable:hover {
+	background: rgba(0, 0, 0, 0.03);
+	border-radius: 6px;
+}
+
+.ent-active {
+	background: rgba(0, 0, 0, 0.05);
+	border-radius: 6px;
+}
+
+.ent-active .ent-name {
+	font-weight: 600;
+}
+
+.ent-active .ent-dist {
+	color: var(--jet);
 }
 
 /* ── Summary banner ──────────────────────────────── */

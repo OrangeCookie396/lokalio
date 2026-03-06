@@ -32,6 +32,13 @@ function dist(leaf) {
 	return leaf?.entities?.[0]?.distance_m ?? null;
 }
 
+// Filter entities by count and optional max distance (metres)
+function filterE(entities, maxCount, maxDistM = Infinity) {
+	return (entities || [])
+		.filter(e => e.distance_m == null || e.distance_m <= maxDistM)
+		.slice(0, maxCount);
+}
+
 // Create marker and store it under a category key for highlight support
 function addCategoryMarker(category, lat, lon, color) {
 	const m = createMarker(window.reportMap, lat, lon, color);
@@ -75,8 +82,9 @@ function parseReportData(input) {
 			]
 		};
 
-		busEntities.forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#3b82f6'));
-		trainEntities.forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#2563eb'));
+		// Map: bus stops within 1 km (max 10), train nearest 2
+		filterE(busEntities, 10, 1000).forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#3b82f6'));
+		filterE(trainEntities, 2).forEach(e => e.lat && addCategoryMarker('transportation', e.lat, e.lon, '#2563eb'));
 	}
 
 	// ====== ZDRAVOTNICTVÍ ======
@@ -96,12 +104,10 @@ function parseReportData(input) {
 			]
 		};
 
-		const hosp0 = h.hospitals?.entities?.[0];
-		if (hosp0?.lat) addCategoryMarker('medicalcare', hosp0.lat, hosp0.lon, '#ef4444');
-		const da0 = h.doctor_adult?.entities?.[0];
-		if (da0?.lat) addCategoryMarker('medicalcare', da0.lat, da0.lon, '#f87171');
-		const dc0 = h.doctor_child?.entities?.[0];
-		if (dc0?.lat) addCategoryMarker('medicalcare', dc0.lat, dc0.lon, '#fca5a5');
+		// Map: nearest 2 per type
+		filterE(h.hospitals?.entities, 2).forEach(e => e.lat && addCategoryMarker('medicalcare', e.lat, e.lon, '#ef4444'));
+		filterE(h.doctor_adult?.entities, 2).forEach(e => e.lat && addCategoryMarker('medicalcare', e.lat, e.lon, '#f87171'));
+		filterE(h.doctor_child?.entities, 2).forEach(e => e.lat && addCategoryMarker('medicalcare', e.lat, e.lon, '#fca5a5'));
 	}
 
 	// ====== REKREACE ======
@@ -119,6 +125,9 @@ function parseReportData(input) {
 			? Math.min(castleDist, chateauDist)
 			: (castleDist ?? chateauDist);
 
+		const castleAll = [...(hs.castle?.entities || []), ...(hs.chateau?.entities || [])]
+			.sort((a, b) => (a.distance_m ?? 0) - (b.distance_m ?? 0));
+
 		result.recreation = {
 			score: applyWeight(toScore(r.value), weights.recreation),
 			array: [
@@ -127,21 +136,22 @@ function parseReportData(input) {
 				{ name: 'Muzeum / galerie', value: fmt(dist(ca.museum_and_gallery)), entities: ca.museum_and_gallery?.entities },
 				{ name: 'Kino', value: fmt(dist(el.cinema)), entities: el.cinema?.entities },
 				{ name: 'Zábavní centrum', value: fmt(dist(el.amusement_centre)), entities: el.amusement_centre?.entities },
-				{ name: 'Hrad / zámek', value: fmt(historicalDist), entities: [...(hs.castle?.entities || []), ...(hs.chateau?.entities || [])] },
+				{ name: 'Hrad / zámek', value: fmt(historicalDist), entities: castleAll },
 				{ name: 'Přírodní zajímavost', value: fmt(dist(nat.nature_curiosity)), entities: nat.nature_curiosity?.entities },
 				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)), entities: wl.spa?.entities },
 			]
 		};
 
-		[
-			ca.culture_centre, ca.library, ca.museum_and_gallery, ca.theatre_and_orchestra,
-			el.cinema, el.amusement_centre, el.free_time_centre,
-			hs.castle, hs.chateau,
-			nat.nature_curiosity, wl.spa,
-		].forEach(leaf => {
-			const e0 = leaf?.entities?.[0];
-			if (e0?.lat) addCategoryMarker('recreation', e0.lat, e0.lon, '#f97316');
-		});
+		// Map: only nearest 1 per sub-category (minimal clutter)
+		[ca.culture_centre, ca.library, ca.museum_and_gallery, el.cinema,
+		 el.amusement_centre, nat.nature_curiosity, wl.spa]
+			.forEach(leaf => {
+				const e0 = filterE(leaf?.entities, 1)[0];
+				if (e0?.lat) addCategoryMarker('recreation', e0.lat, e0.lon, '#f97316');
+			});
+		// Nearest castle or chateau (not both)
+		const hist0 = castleAll[0];
+		if (hist0?.lat) addCategoryMarker('recreation', hist0.lat, hist0.lon, '#f97316');
 	}
 
 	// ====== VZDĚLÁNÍ ======
@@ -160,8 +170,9 @@ function parseReportData(input) {
 			]
 		};
 
+		// Map: nearest 1 per type only
 		[s.kindergarten, s.primary, s.high, s.university, e.art_school].forEach(leaf => {
-			const e0 = leaf?.entities?.[0];
+			const e0 = filterE(leaf?.entities, 1)[0];
 			if (e0?.lat) addCategoryMarker('education', e0.lat, e0.lon, '#10b981');
 		});
 	}
@@ -177,8 +188,8 @@ function parseReportData(input) {
 			]
 		};
 
-		const iz0 = w.industrial_zone?.entities?.[0];
-		if (iz0?.lat) addCategoryMarker('work', iz0.lat, iz0.lon, '#f59e0b');
+		// Map: nearest 3
+		filterE(w.industrial_zone?.entities, 3).forEach(e => e.lat && addCategoryMarker('work', e.lat, e.lon, '#f59e0b'));
 	}
 
 	// ====== QoL ======
@@ -200,12 +211,12 @@ function parseReportData(input) {
 				{ name: 'Prach PM10 (μg/m³)', value: 'N/A' },
 				{ name: 'Oxid dusičitý (μg/m³)', value: 'N/A' },
 				{ name: 'Záplavová zóna', value: floodLabel },
-				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: izs.ambulance?.entities },
-				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: izs.firefighter?.entities },
-				{ name: 'Policie', value: fmt(dist(izs.police)), entities: izs.police?.entities },
-				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)), entities: noise.train_route?.entities },
-				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)), entities: noise.airport?.entities },
-				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)), entities: noise.industrial_zone?.entities },
+				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: filterE(izs.ambulance?.entities, 3) },
+				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: filterE(izs.firefighter?.entities, 3) },
+				{ name: 'Policie', value: fmt(dist(izs.police)), entities: filterE(izs.police?.entities, 3) },
+				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)), entities: filterE(noise.train_route?.entities, 3) },
+				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)), entities: filterE(noise.airport?.entities, 3) },
+				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)), entities: filterE(noise.industrial_zone?.entities, 3) },
 			]
 		};
 	}

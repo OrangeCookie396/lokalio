@@ -1,4 +1,105 @@
 (function initAddMap() {
+	// Královéhradecký kraj bounding box
+	const REGION_BOUNDS = L.latLngBounds(
+		L.latLng(49.94, 15.35),
+		L.latLng(50.78, 16.64)
+	);
+
+	window.addMap.setMaxBounds(REGION_BOUNDS.pad(0.05));
+	window.addMap.fitBounds(REGION_BOUNDS);
+	window.addMap.setMinZoom(9);
+
+	// Point-in-ring test (GeoJSON coords are [lon, lat])
+	function pointInRing(lat, lon, ring) {
+		let inside = false;
+		for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+			const [xi, yi] = ring[i], [xj, yj] = ring[j];
+			if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)
+				inside = !inside;
+		}
+		return inside;
+	}
+
+	function pointInGeoJSON(lat, lon, geojson) {
+		if (geojson.type === 'Polygon') {
+			return pointInRing(lat, lon, geojson.coordinates[0]);
+		} else if (geojson.type === 'MultiPolygon') {
+			return geojson.coordinates.some(poly => pointInRing(lat, lon, poly[0]));
+		}
+		return false;
+	}
+
+	let regionGeoJSON = null;
+
+	function isInRegion(lat, lon) {
+		if (regionGeoJSON) return pointInGeoJSON(lat, lon, regionGeoJSON);
+		return REGION_BOUNDS.contains(L.latLng(lat, lon)); // fallback until loaded
+	}
+
+	// Fetch real region boundary, apply dark mask and store for click validation
+	(async () => {
+		try {
+			const res = await fetch('https://nominatim.openstreetmap.org/search?' + new URLSearchParams({
+				q: 'Královéhradecký kraj',
+				format: 'json',
+				polygon_geojson: '1',
+				limit: '1',
+				countrycodes: 'cz',
+			}), { headers: { 'Accept-Language': 'cs' } });
+			const data = await res.json();
+			const geojson = data[0]?.geojson;
+			if (!geojson) return;
+
+			regionGeoJSON = geojson;
+
+			// World outer ring (GeoJSON is [lon, lat])
+			const world = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
+
+			let holes;
+			if (geojson.type === 'Polygon') {
+				holes = [geojson.coordinates[0]];
+			} else if (geojson.type === 'MultiPolygon') {
+				holes = geojson.coordinates.map(p => p[0]);
+			} else return;
+
+			// Dark overlay on everything outside the region
+			L.geoJSON({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [world, ...holes] }
+			}, {
+				interactive: false,
+				style: { fillColor: '#000', fillOpacity: 0.1, color: 'transparent', weight: 0 }
+			}).addTo(window.addMap);
+
+			// Region border
+			L.geoJSON({ type: 'Feature', geometry: geojson }, {
+				interactive: false,
+				style: { fill: false, color: '#1F7A8C', weight: 2, opacity: 0.7 }
+			}).addTo(window.addMap);
+		} catch {}
+	})();
+
+	function showRegionError() {
+		let toast = document.getElementById('region-toast');
+		if (!toast) {
+			toast = document.createElement('div');
+			toast.id = 'region-toast';
+			toast.style.cssText = `
+				position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+				background: var(--snow); border: 1px solid var(--error);
+				color: var(--error-dark, #b91c1c); padding: 10px 18px; border-radius: 10px;
+				font-size: 0.88rem; font-weight: 500; z-index: 2000; white-space: nowrap;
+				box-shadow: 0 4px 16px rgba(0,0,0,0.12); pointer-events: none;
+				transition: opacity 0.4s ease;
+			`;
+			toast.textContent = 'Vyberte místo v Královéhradeckém kraji';
+			document.body.appendChild(toast);
+		}
+		toast.style.opacity = '1';
+		clearTimeout(toast._timer);
+		toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+	}
+
 	let selectedMarker = null;
 
 	function placePin(lat, lon, label) {
@@ -27,9 +128,12 @@
 	}
 
 	async function fetchSuggestions(q) {
-		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&accept-language=cs&countrycodes=cz&addressdetails=1`;
+		// viewbox: minLon,maxLat,maxLon,minLat — bounded=1 restricts to region
+		const viewbox = `${REGION_BOUNDS.getWest()},${REGION_BOUNDS.getNorth()},${REGION_BOUNDS.getEast()},${REGION_BOUNDS.getSouth()}`;
+		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=8&accept-language=cs&countrycodes=cz&addressdetails=1&viewbox=${viewbox}&bounded=1`;
 		const res = await fetch(url, { headers: { 'Accept-Language': 'cs' } });
-		return res.json();
+		const results = await res.json();
+		return results.filter(item => isInRegion(parseFloat(item.lat), parseFloat(item.lon)));
 	}
 
 	function buildLabel(item) {
@@ -88,6 +192,10 @@
 	input.addEventListener('blur', () => setTimeout(clearSuggestions, 150));
 
 	window.addMap.on('click', async (e) => {
+		if (!isInRegion(e.latlng.lat, e.latlng.lng)) {
+			showRegionError();
+			return;
+		}
 		const chip = document.getElementById('location-text');
 		if (chip) chip.textContent = 'Načítám adresu…';
 		placePin(e.latlng.lat, e.latlng.lng, null);
