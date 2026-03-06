@@ -22,7 +22,7 @@ async function searchAddress() {
 			await new Promise(r => setTimeout(r, 800)); // simulace načítání
 			result = DUMMY_RESPONSE;
 		} else {
-			const response = await fetch(`http://localhost:3000/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
+			const response = await fetch(`/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
 			if (!response.ok) {
 				const body = await response.json().catch(() => null);
 				throw new Error(body?.error || `Server vrátil chybu (${response.status})`);
