@@ -36,6 +36,8 @@ function dist(leaf) {
 function addCategoryMarker(category, lat, lon, color) {
 	const m = createMarker(window.reportMap, lat, lon, color);
 	if (!m) return;
+	if (!window.categoryMarkers) window.categoryMarkers = {};
+	if (!window.allReportMarkers) window.allReportMarkers = [];
 	if (!window.categoryMarkers[category]) window.categoryMarkers[category] = [];
 	window.categoryMarkers[category].push(m);
 	window.allReportMarkers.push(m);
@@ -68,9 +70,8 @@ function parseReportData(input) {
 		result.transportation = {
 			score: applyWeight(toScore(t.value), weights.transportation),
 			array: [
-				{ name: 'Nejbližší autobusová zastávka', value: fmt(nearestBus) },
-				{ name: 'Počet zastávek v dosahu', value: String(busEntities.length) },
-				{ name: 'Nejbližší vlakové nádraží', value: fmt(nearestTrain) },
+				{ name: 'Autobusové zastávky', value: fmt(nearestBus), entities: busEntities },
+				{ name: 'Vlakové nádraží', value: fmt(nearestTrain), entities: trainEntities },
 			]
 		};
 
@@ -86,12 +87,12 @@ function parseReportData(input) {
 		result.medicalcare = {
 			score: applyWeight(toScore(h.value), weights.medicalcare),
 			array: [
-				{ name: 'Praktický lékař', value: fmt(dist(h.doctor_adult)) },
-				{ name: 'Dětský lékař', value: fmt(dist(h.doctor_child)) },
-				{ name: 'Nemocnice', value: fmt(dist(h.hospitals)) },
-				{ name: 'Zubař', value: fmt(dist(sp.dentist)) },
-				{ name: 'Gynekolog', value: fmt(dist(sp.outpatient_gynecologist)) },
-				{ name: 'Rehabilitace', value: fmt(dist(sp.rehabilitation_centre)) },
+				{ name: 'Praktický lékař', value: fmt(dist(h.doctor_adult)), entities: h.doctor_adult?.entities },
+				{ name: 'Dětský lékař', value: fmt(dist(h.doctor_child)), entities: h.doctor_child?.entities },
+				{ name: 'Nemocnice', value: fmt(dist(h.hospitals)), entities: h.hospitals?.entities },
+				{ name: 'Zubař', value: fmt(dist(sp.dentist)), entities: sp.dentist?.entities },
+				{ name: 'Gynekolog', value: fmt(dist(sp.outpatient_gynecologist)), entities: sp.outpatient_gynecologist?.entities },
+				{ name: 'Rehabilitace', value: fmt(dist(sp.rehabilitation_centre)), entities: sp.rehabilitation_centre?.entities },
 			]
 		};
 
@@ -121,14 +122,14 @@ function parseReportData(input) {
 		result.recreation = {
 			score: applyWeight(toScore(r.value), weights.recreation),
 			array: [
-				{ name: 'Kulturní centrum', value: fmt(dist(ca.culture_centre)) },
-				{ name: 'Knihovna', value: fmt(dist(ca.library)) },
-				{ name: 'Muzeum / galerie', value: fmt(dist(ca.museum_and_gallery)) },
-				{ name: 'Kino', value: fmt(dist(el.cinema)) },
-				{ name: 'Zábavní centrum', value: fmt(dist(el.amusement_centre)) },
-				{ name: 'Hrad / zámek', value: fmt(historicalDist) },
-				{ name: 'Přírodní zajímavost', value: fmt(dist(nat.nature_curiosity)) },
-				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)) },
+				{ name: 'Kulturní centrum', value: fmt(dist(ca.culture_centre)), entities: ca.culture_centre?.entities },
+				{ name: 'Knihovna', value: fmt(dist(ca.library)), entities: ca.library?.entities },
+				{ name: 'Muzeum / galerie', value: fmt(dist(ca.museum_and_gallery)), entities: ca.museum_and_gallery?.entities },
+				{ name: 'Kino', value: fmt(dist(el.cinema)), entities: el.cinema?.entities },
+				{ name: 'Zábavní centrum', value: fmt(dist(el.amusement_centre)), entities: el.amusement_centre?.entities },
+				{ name: 'Hrad / zámek', value: fmt(historicalDist), entities: [...(hs.castle?.entities || []), ...(hs.chateau?.entities || [])] },
+				{ name: 'Přírodní zajímavost', value: fmt(dist(nat.nature_curiosity)), entities: nat.nature_curiosity?.entities },
+				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)), entities: wl.spa?.entities },
 			]
 		};
 
@@ -151,11 +152,11 @@ function parseReportData(input) {
 		result.education = {
 			score: applyWeight(toScore(e.value), weights.education),
 			array: [
-				{ name: 'Mateřská škola', value: fmt(dist(s.kindergarten)) },
-				{ name: 'Základní škola', value: fmt(dist(s.primary)) },
-				{ name: 'Střední škola', value: fmt(dist(s.high)) },
-				{ name: 'Vysoká škola', value: fmt(dist(s.university)) },
-				{ name: 'ZUŠ', value: fmt(dist(e.art_school)) },
+				{ name: 'Mateřská škola', value: fmt(dist(s.kindergarten)), entities: s.kindergarten?.entities },
+				{ name: 'Základní škola', value: fmt(dist(s.primary)), entities: s.primary?.entities },
+				{ name: 'Střední škola', value: fmt(dist(s.high)), entities: s.high?.entities },
+				{ name: 'Vysoká škola', value: fmt(dist(s.university)), entities: s.university?.entities },
+				{ name: 'ZUŠ', value: fmt(dist(e.art_school)), entities: e.art_school?.entities },
 			]
 		};
 
@@ -172,7 +173,7 @@ function parseReportData(input) {
 		result.work = {
 			score: applyWeight(toScore(w.value), weights.work),
 			array: [
-				{ name: 'Průmyslová zóna', value: fmt(dist(w.industrial_zone)) },
+				{ name: 'Průmyslová zóna', value: fmt(dist(w.industrial_zone)), entities: w.industrial_zone?.entities },
 			]
 		};
 
@@ -199,12 +200,12 @@ function parseReportData(input) {
 				{ name: 'Prach PM10 (μg/m³)', value: 'N/A' },
 				{ name: 'Oxid dusičitý (μg/m³)', value: 'N/A' },
 				{ name: 'Záplavová zóna', value: floodLabel },
-				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)) },
-				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)) },
-				{ name: 'Policie', value: fmt(dist(izs.police)) },
-				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)) },
-				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)) },
-				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)) },
+				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: izs.ambulance?.entities },
+				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: izs.firefighter?.entities },
+				{ name: 'Policie', value: fmt(dist(izs.police)), entities: izs.police?.entities },
+				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)), entities: noise.train_route?.entities },
+				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)), entities: noise.airport?.entities },
+				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)), entities: noise.industrial_zone?.entities },
 			]
 		};
 	}

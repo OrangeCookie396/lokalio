@@ -171,7 +171,17 @@
 				document.getElementById('location-text').textContent = entry.address;
 
 				switchTabs(2);
-				createMarker(window.reportMap, entry.lat, entry.lon, '#3b82f6');
+
+				(window.allReportMarkers || []).forEach(m => { try { m.remove(); } catch(e) {} });
+				window.allReportMarkers = [];
+				window.categoryMarkers = {};
+
+				const userMarker = createMarker(window.reportMap, entry.lat, entry.lon, '#ec4899', 52);
+				if (userMarker) {
+					window.allReportMarkers.push(userMarker);
+					window.userLocationMarker = userMarker;
+				}
+
 				generateReport(entry.data);
 			});
 		});

@@ -310,17 +310,54 @@ function showDetail(cat, meta, key = null) {
 	const statsList = document.createElement('div');
 	statsList.className = 'cat-detail-stats';
 	(cat.array || []).forEach(item => {
+		const entities = (item.entities || []).filter(e => e.name || e.distance_m != null);
+		const hasEntities = entities.length > 0;
+
+		const wrap = document.createElement('div');
+		wrap.className = 'cat-detail-stat-wrap';
+
 		const row = document.createElement('div');
-		row.className = 'cat-detail-stat';
+		row.className = 'cat-detail-stat' + (hasEntities ? ' expandable' : '');
+
 		const nameSpan = document.createElement('span');
 		nameSpan.className = 'ds-name';
 		nameSpan.textContent = item.name;
+
 		const valSpan = document.createElement('span');
 		valSpan.className = 'ds-value';
 		valSpan.textContent = item.value;
+
 		row.appendChild(nameSpan);
 		row.appendChild(valSpan);
-		statsList.appendChild(row);
+
+		if (hasEntities) {
+			const chevron = document.createElement('span');
+			chevron.className = 'ds-chevron';
+			chevron.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+			row.appendChild(chevron);
+
+			const entityList = document.createElement('ul');
+			entityList.className = 'ds-entity-list';
+			entities.forEach(e => {
+				const li = document.createElement('li');
+				const nameText = e.name || '—';
+				const distText = e.distance_m != null ? fmt(e.distance_m) : '';
+				li.innerHTML = `<span class="ent-name">${nameText}</span>${distText ? `<span class="ent-dist">${distText}</span>` : ''}`;
+				entityList.appendChild(li);
+			});
+
+			row.addEventListener('click', () => {
+				const open = wrap.classList.toggle('open');
+				entityList.style.maxHeight = open ? entityList.scrollHeight + 'px' : '0';
+			});
+
+			wrap.appendChild(row);
+			wrap.appendChild(entityList);
+		} else {
+			wrap.appendChild(row);
+		}
+
+		statsList.appendChild(wrap);
 	});
 	panel.appendChild(statsList);
 
