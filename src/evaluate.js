@@ -698,7 +698,7 @@ export async function evaluate(lat, lon) {
 	};
 
 	// AI summary runs after scoring is done (non-blocking for the scores)
-	//result.summary = await generateSummary(result);
+	result.summary = await generateSummary(result);
 
 	return result;
 }

@@ -1,4 +1,4 @@
-const USE_DUMMY_DATA = true; // TODO: přepnout na false před nasazením
+const USE_DUMMY_DATA = false;
 
 async function searchAddress() {
 	console.log("searchAddress triggered");

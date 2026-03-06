@@ -3,7 +3,7 @@ function getInterestWeights() {
 	switch (interest) {
 		case 'student':
 			return { transportation: 1.1, medicalcare: 1.0, recreation: 1.1, education: 1.3, work: 1.0, qol: 1.0 };
-		case 'rodic':
+		case 'rodina':
 			return { transportation: 1.1, medicalcare: 1.2, recreation: 1.0, education: 1.0, work: 0.9, qol: 1.3 };
 		case 'pracujici':
 			return { transportation: 1.2, medicalcare: 1.0, recreation: 0.9, education: 0.7, work: 1.4, qol: 1.1 };
@@ -26,6 +26,11 @@ function fmt(m) {
 	return m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`;
 }
 
+// Get distance from a leaf node (entities[0].distance_m)
+function dist(leaf) {
+	return leaf?.entities?.[0]?.distance_m ?? null;
+}
+
 function parseReportData(input) {
 	const weights = getInterestWeights();
 	const data = input.openData?.data || input.data || input;
@@ -34,44 +39,47 @@ function parseReportData(input) {
 	// ====== DOPRAVA ======
 	if (data.transport) {
 		const t = data.transport;
-		const busStops = t.bus_stop || [];
-		const trainStops = t.train_stop || [];
-		const nearestBus = busStops[0]?.distance_m ?? null;
-		const nearestTrain = trainStops[0]?.distance_m ?? null;
+		const busEntities = t.bus_stop?.entities || [];
+		const trainEntities = t.train_stop?.entities || [];
+		const nearestBus = busEntities[0]?.distance_m ?? null;
+		const nearestTrain = trainEntities[0]?.distance_m ?? null;
 
 		result.transportation = {
-			score: applyWeight(toScore(t.score), weights.transportation),
+			score: applyWeight(toScore(t.value), weights.transportation),
 			array: [
 				{ name: 'Nejbližší autobusová zastávka', value: fmt(nearestBus) },
-				{ name: 'Počet zastávek v dosahu', value: String(busStops.length) },
+				{ name: 'Počet zastávek v dosahu', value: String(busEntities.length) },
 				{ name: 'Nejbližší vlakové nádraží', value: fmt(nearestTrain) },
 			]
 		};
 
-		busStops.forEach(s => s.coordinates && createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#3b82f6'));
-		trainStops.forEach(s => s.coordinates && createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#2563eb'));
+		busEntities.forEach(e => e.lat && createMarker(window.reportMap, e.lat, e.lon, '#3b82f6'));
+		trainEntities.forEach(e => e.lat && createMarker(window.reportMap, e.lat, e.lon, '#2563eb'));
 	}
 
 	// ====== ZDRAVOTNICTVÍ ======
 	if (data.healthcare) {
 		const h = data.healthcare;
-		const sp = h.special || {};
+		const sp = h.special_care || {};
 
 		result.medicalcare = {
-			score: applyWeight(toScore(h.score), weights.medicalcare),
+			score: applyWeight(toScore(h.value), weights.medicalcare),
 			array: [
-				{ name: 'Praktický lékař', value: fmt(h.doctor_adult?.distance_m) },
-				{ name: 'Dětský lékař', value: fmt(h.doctor_child?.distance_m) },
-				{ name: 'Nemocnice', value: fmt(h.hospitals?.distance_m) },
-				{ name: 'Zubař', value: fmt(sp.dentist?.distance_m) },
-				{ name: 'Gynekolog', value: fmt(sp.outpatient_gynecologist?.distance_m) },
-				{ name: 'Rehabilitace', value: fmt(sp.rehabilitation_centre?.distance_m) },
+				{ name: 'Praktický lékař', value: fmt(dist(h.doctor_adult)) },
+				{ name: 'Dětský lékař', value: fmt(dist(h.doctor_child)) },
+				{ name: 'Nemocnice', value: fmt(dist(h.hospitals)) },
+				{ name: 'Zubař', value: fmt(dist(sp.dentist)) },
+				{ name: 'Gynekolog', value: fmt(dist(sp.outpatient_gynecologist)) },
+				{ name: 'Rehabilitace', value: fmt(dist(sp.rehabilitation_centre)) },
 			]
 		};
 
-		if (h.hospitals?.coordinates) createMarker(window.reportMap, h.hospitals.coordinates.lat, h.hospitals.coordinates.lon, '#ef4444');
-		if (h.doctor_adult?.coordinates) createMarker(window.reportMap, h.doctor_adult.coordinates.lat, h.doctor_adult.coordinates.lon, '#f87171');
-		if (h.doctor_child?.coordinates) createMarker(window.reportMap, h.doctor_child.coordinates.lat, h.doctor_child.coordinates.lon, '#fca5a5');
+		const hosp0 = h.hospitals?.entities?.[0];
+		if (hosp0?.lat) createMarker(window.reportMap, hosp0.lat, hosp0.lon, '#ef4444');
+		const da0 = h.doctor_adult?.entities?.[0];
+		if (da0?.lat) createMarker(window.reportMap, da0.lat, da0.lon, '#f87171');
+		const dc0 = h.doctor_child?.entities?.[0];
+		if (dc0?.lat) createMarker(window.reportMap, dc0.lat, dc0.lon, '#fca5a5');
 	}
 
 	// ====== REKREACE ======
@@ -83,17 +91,23 @@ function parseReportData(input) {
 		const nat = r.nature || {};
 		const wl = r.wellness_and_lifestyle || {};
 
+		const castleDist = dist(hs.castle);
+		const chateauDist = dist(hs.chateau);
+		const historicalDist = castleDist != null && chateauDist != null
+			? Math.min(castleDist, chateauDist)
+			: (castleDist ?? chateauDist);
+
 		result.recreation = {
-			score: applyWeight(toScore(r.score), weights.recreation),
+			score: applyWeight(toScore(r.value), weights.recreation),
 			array: [
-				{ name: 'Kulturní centrum', value: fmt(ca.culture_centre?.distance_m) },
-				{ name: 'Knihovna', value: fmt(ca.library?.distance_m) },
-				{ name: 'Muzeum / galerie', value: fmt(ca.museum_and_gallery?.distance_m) },
-				{ name: 'Kino', value: fmt(el.cinema?.distance_m) },
-				{ name: 'Zábavní centrum', value: fmt(el.amusment_centre?.distance_m) },
-				{ name: 'Hrad / zámek', value: fmt((hs.castle ?? hs.chateau)?.distance_m) },
-				{ name: 'Přírodní zajímavost', value: fmt(nat.nature_curiosity?.distance_m) },
-				{ name: 'Lázně / wellness', value: fmt(wl.spa?.distance_m) },
+				{ name: 'Kulturní centrum', value: fmt(dist(ca.culture_centre)) },
+				{ name: 'Knihovna', value: fmt(dist(ca.library)) },
+				{ name: 'Muzeum / galerie', value: fmt(dist(ca.museum_and_gallery)) },
+				{ name: 'Kino', value: fmt(dist(el.cinema)) },
+				{ name: 'Zábavní centrum', value: fmt(dist(el.amusement_centre)) },
+				{ name: 'Hrad / zámek', value: fmt(historicalDist) },
+				{ name: 'Přírodní zajímavost', value: fmt(dist(nat.nature_curiosity)) },
+				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)) },
 			]
 		};
 	}
@@ -104,13 +118,13 @@ function parseReportData(input) {
 		const s = e.school || {};
 
 		result.education = {
-			score: applyWeight(toScore(e.score), weights.education),
+			score: applyWeight(toScore(e.value), weights.education),
 			array: [
-				{ name: 'Mateřská škola', value: fmt(s.kindergarten?.distance_m) },
-				{ name: 'Základní škola', value: fmt(s.primary?.distance_m) },
-				{ name: 'Střední škola', value: fmt(s.high?.distance_m) },
-				{ name: 'Vysoká škola', value: fmt(s.university?.distance_m) },
-				{ name: 'ZUŠ', value: fmt(e.art_school?.distance_m) },
+				{ name: 'Mateřská škola', value: fmt(dist(s.kindergarten)) },
+				{ name: 'Základní škola', value: fmt(dist(s.primary)) },
+				{ name: 'Střední škola', value: fmt(dist(s.high)) },
+				{ name: 'Vysoká škola', value: fmt(dist(s.university)) },
+				{ name: 'ZUŠ', value: fmt(dist(e.art_school)) },
 			]
 		};
 	}
@@ -120,15 +134,14 @@ function parseReportData(input) {
 		const w = data.work;
 
 		result.work = {
-			score: applyWeight(toScore(w.score), weights.work),
+			score: applyWeight(toScore(w.value), weights.work),
 			array: [
-				{ name: 'Průmyslová zóna', value: fmt(w.industrial_zone?.distance_m) },
+				{ name: 'Průmyslová zóna', value: fmt(dist(w.industrial_zone)) },
 			]
 		};
 
-		if (w.industrial_zone?.coordinates) {
-			createMarker(window.reportMap, w.industrial_zone.coordinates.lat, w.industrial_zone.coordinates.lon, '#f59e0b');
-		}
+		const iz0 = w.industrial_zone?.entities?.[0];
+		if (iz0?.lat) createMarker(window.reportMap, iz0.lat, iz0.lon, '#f59e0b');
 	}
 
 	// ====== QoL ======
@@ -139,23 +152,23 @@ function parseReportData(input) {
 		const izs = q.izs || {};
 		const noise = q.noise || {};
 
-		const floodLabel = flood['5year']?.inside ? 'ANO – 5letá' :
-			flood['20year']?.inside ? 'ANO – 20letá' :
-			flood['100year']?.inside ? 'ANO – 100letá' : 'Ne';
+		const floodLabel = flood['5year']?.entities?.some(e => e.inside) ? 'ANO – 5letá' :
+			flood['20year']?.entities?.some(e => e.inside) ? 'ANO – 20letá' :
+			flood['100year']?.entities?.some(e => e.inside) ? 'ANO – 100letá' : 'Ne';
 
 		result.qol = {
-			score: applyWeight(toScore(q.score), weights.qol),
+			score: applyWeight(toScore(q.value), weights.qol),
 			array: [
-				{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.value != null ? String(air.benzopyren.value) : 'N/A' },
-				{ name: 'Prach PM10 (μg/m³)', value: air.dust?.value != null ? String(air.dust.value) : 'N/A' },
-				{ name: 'Oxid dusičitý (μg/m³)', value: air.oxide?.value != null ? String(air.oxide.value) : 'N/A' },
+				{ name: 'Benzo[a]pyren (ng/m³)', value: 'N/A' },
+				{ name: 'Prach PM10 (μg/m³)', value: 'N/A' },
+				{ name: 'Oxid dusičitý (μg/m³)', value: 'N/A' },
 				{ name: 'Záplavová zóna', value: floodLabel },
-				{ name: 'Záchranná služba', value: fmt(izs.ambulance?.distance_m) },
-				{ name: 'Hasiči', value: fmt(izs.firefighter?.distance_m) },
-				{ name: 'Policie', value: fmt(izs.police?.distance_m) },
-				{ name: 'Hluk – vlak', value: fmt(noise.train_route?.distance_m) },
-				{ name: 'Hluk – letiště', value: fmt(noise.airport?.distance_m) },
-				{ name: 'Hluk – průmysl', value: fmt(noise.industrial_zone?.distance_m) },
+				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)) },
+				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)) },
+				{ name: 'Policie', value: fmt(dist(izs.police)) },
+				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)) },
+				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)) },
+				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)) },
 			]
 		};
 	}
