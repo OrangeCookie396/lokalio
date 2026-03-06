@@ -6,7 +6,7 @@
 			window.addMap.removeLayer(selectedMarker);
 		}
 
-		selectedMarker = createMarker(window.addMap, e.latlng.lat, e.latlng.lng, '#000000');
+		selectedMarker = createMarker(window.addMap, e.latlng.lat, e.latlng.lng, '#1F7A8C');
 		inputCoordinates = [e.latlng.lat, e.latlng.lng];
 
 		document.getElementById('btn-next')?.classList.remove('disabled');

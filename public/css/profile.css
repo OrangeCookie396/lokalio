@@ -20,6 +20,10 @@
 	gap: 28px;
 }
 
+.wizard-title {
+	text-align: center;
+}
+
 .wizard-title h2 {
 	font-size: 1.875rem;
 	font-weight: 600;
@@ -36,6 +40,7 @@
 .step-indicator {
 	display: flex;
 	align-items: flex-start;
+	width: 100%;
 }
 
 .step-item {
@@ -89,9 +94,9 @@
 }
 
 .step-indicator .step-line {
-	flex: 0 0 48px;
-	height: 2px;
-	border-radius: 1px;
+	flex: 0 0 80px;
+	height: 3px;
+	border-radius: 2px;
 	background-color: rgba(var(--silver-rgb), 0.35);
 	margin-top: 18px;
 	align-self: flex-start;

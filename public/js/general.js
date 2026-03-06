@@ -21,8 +21,9 @@ function createMarker(map, lat, lon, color = '#007bff') {
 	}
 
 	const svg = `
-		<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 256 256" fill="${color}">
-			<path d="M128 16a88.1 88.1 0 0 0-88 88c0 75.3 80 132.17 83.41 134.55a8 8 0 0 0 9.18 0C136 236.17 216 179.3 216 104a88.1 88.1 0 0 0-88-88m0 56a32 32 0 1 1-32 32a32 32 0 0 1 32-32"/>
+		<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="none">
+			<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" fill="${color}"/>
+			<circle cx="12" cy="10" r="3" fill="white"/>
 		</svg>`;
 	const svgBase64 = `data:image/svg+xml;base64,${btoa(svg)}`;
 
@@ -34,7 +35,7 @@ function createMarker(map, lat, lon, color = '#007bff') {
 	});
 
 	const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
-	map.setView([lat, lon], 13);
+	map.setView([lat, lon], map.getZoom());
 
 	return marker;
 }
