@@ -3,6 +3,7 @@
 #overview {
 	gap: 0 !important;
 	height: 100%;
+	overflow: hidden;
 }
 
 main #report-map {
@@ -15,12 +16,12 @@ main #report-map {
 #overview #categories {
 	flex: 1;
 	height: 100%;
-	overflow-y: auto;
+	overflow: hidden;
 	background: var(--platinum);
 	display: flex;
 	flex-direction: column;
-	padding: 24px;
-	gap: 16px;
+	padding: 20px;
+	gap: 12px;
 	box-sizing: border-box;
 	position: relative;
 }
@@ -29,11 +30,11 @@ main #report-map {
 
 .report-hero {
 	background: linear-gradient(135deg, var(--jet) 0%, var(--teal) 100%);
-	border-radius: 20px;
-	padding: 24px;
+	border-radius: 16px;
+	padding: 16px 20px;
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	gap: 16px;
 	color: var(--snow);
 	flex-shrink: 0;
 }
@@ -41,8 +42,8 @@ main #report-map {
 .hero-ring {
 	flex-shrink: 0;
 	position: relative;
-	width: 96px;
-	height: 96px;
+	width: 72px;
+	height: 72px;
 }
 
 .hero-ring .ring-label {
@@ -84,14 +85,14 @@ main #report-map {
 }
 
 .hero-location {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	gap: 6px;
 	font-size: 0.75rem;
 	background: rgba(255, 255, 255, 0.14);
 	padding: 6px 12px;
 	border-radius: 100px;
-	max-width: 100%;
+	max-width: fit-content;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -102,20 +103,25 @@ main #report-map {
 .cat-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 12px;
+	grid-template-rows: repeat(3, 1fr);
+	gap: 10px;
+	flex: 1;
+	min-height: 0;
 }
 
 .cat-card {
 	background: var(--snow);
 	border-radius: 16px;
-	padding: 16px;
+	padding: 14px;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 8px;
 	cursor: pointer;
 	transition: transform 200ms ease, box-shadow 200ms ease;
 	box-shadow: 0 1px 4px rgba(var(--black-rgb), 0.05);
 	border: 1px solid rgba(var(--silver-rgb), 0.12);
+	min-height: 0;
+	overflow: hidden;
 }
 
 .cat-card:hover {
@@ -328,6 +334,75 @@ main #report-map {
 	font-weight: 600;
 	color: var(--jet);
 	flex-shrink: 0;
+}
+
+/* ── Summary banner ──────────────────────────────── */
+
+.summary-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 12px 18px;
+	border-radius: 14px;
+	border: 1px solid rgba(var(--teal-rgb), 0.25);
+	background: rgba(var(--teal-rgb), 0.07);
+	color: var(--teal);
+	font-size: 0.82rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 160ms;
+	box-sizing: border-box;
+	flex-shrink: 0;
+}
+
+.summary-banner:hover {
+	background: rgba(var(--teal-rgb), 0.13);
+}
+
+.summary-banner-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* ── Summary accordion ───────────────────────────── */
+
+.summary-accordion {
+	flex-shrink: 0;
+	border-radius: 14px;
+	overflow: hidden;
+	border: 1px solid rgba(var(--teal-rgb), 0.25);
+}
+
+.summary-accordion .summary-banner {
+	border-radius: 0;
+	border: none;
+}
+
+.summary-accordion.open .summary-chevron {
+	transform: rotate(180deg);
+}
+
+.summary-chevron {
+	transition: transform 280ms ease;
+	flex-shrink: 0;
+}
+
+.summary-dropdown-body {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	background: var(--snow);
+	font-size: 0.82rem;
+	line-height: 1.7;
+	color: var(--slate);
+	white-space: pre-line;
+	padding: 0 16px;
+}
+
+.summary-accordion.open .summary-dropdown-body {
+	padding: 12px 16px;
 }
 
 .hidden {

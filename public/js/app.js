@@ -1,3 +1,5 @@
+const USE_DUMMY_DATA = true; // TODO: přepnout na false před nasazením
+
 async function searchAddress() {
 	console.log("searchAddress triggered");
 
@@ -14,30 +16,39 @@ async function searchAddress() {
 	startAnimation();
 
 	try {
-		const response = await fetch(`http://localhost:3000/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
+		let result;
 
-		if (!response.ok) {
-			const body = await response.json().catch(() => null);
-			throw new Error(body?.error || `Server vrátil chybu (${response.status})`);
+		if (USE_DUMMY_DATA) {
+			await new Promise(r => setTimeout(r, 800)); // simulace načítání
+			result = DUMMY_RESPONSE;
+		} else {
+			const response = await fetch(`http://localhost:3000/evaluate?lat=${inputCoordinates[0]}&lon=${inputCoordinates[1]}`);
+			if (!response.ok) {
+				const body = await response.json().catch(() => null);
+				throw new Error(body?.error || `Server vrátil chybu (${response.status})`);
+			}
+			result = await response.json();
 		}
-
-		const result = await response.json();
 
 		switchTabs(2);
 
 		createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#3b82f6');
 
-		if (result.openData) {
-			createPOIMarkers(result);
-		}
-
 		generateReport(result);
 
-		console.log("LLM response:", result);
+		const address = document.getElementById('location-text')?.textContent || '—';
+		historySave(result, address, inputCoordinates[0], inputCoordinates[1]);
+
+		console.log("Response:", result);
 	} catch (err) {
-		console.error("Error fetching LLM response:", err);
+		console.error("Error:", err);
 		showError("Nepodařilo se získat hodnocení. Zkuste to prosím znovu.");
 	} finally {
 		stopAnimation();
 	}
 }
+
+// Load history module
+const _histScript = document.createElement('script');
+_histScript.src = 'js/history.js';
+document.head.appendChild(_histScript);

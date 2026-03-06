@@ -1,245 +1,161 @@
-// Create markers on the map for all POIs from API response
-function createPOIMarkers(apiResponse) {
-	console.log('createPOIMarkers received:', apiResponse);
-
-	// Handle both formats: direct categories or nested in openData.data
-	const data = apiResponse.openData?.data || apiResponse.data || apiResponse;
-
-	console.log('Extracted data:', data);
-	console.log('Transport data:', data.transport);
-	console.log('Healthcare data:', data.healthcare);
-
-	// ====== TRANSPORTATION ======
-	if (data.transport) {
-		const t = data.transport;
-		(t.bus_stops || []).forEach(stop =>
-			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#3b82f6')
-		);
-		(t.train_stations || []).forEach(stop =>
-			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#2563eb')
-		);
-	}
-
-	// ====== HEALTHCARE ======
-	if (data.healthcare) {
-		const h = data.healthcare;
-		(h.hospitals || []).forEach(hosp =>
-			createMarker(window.reportMap, hosp.coordinates.lat, hosp.coordinates.lon, '#ef4444')
-		);
-	}
-
-	// ====== EDUCATION ======
-	if (data.education) {
-		const e = data.education;
-		(e.schools || []).forEach(s =>
-			createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#10b981')
-		);
-	}
-
-	// ====== EMPLOYMENT ======
-	if (data.employment) {
-		const w = data.employment;
-		(w.industrial_zones || []).forEach(z =>
-			createMarker(window.reportMap, z.coordinates.lat, z.coordinates.lon, '#f59e0b')
-		);
-	}
-}
-
 function getInterestWeights() {
 	const interest = window.selectedInterest || '';
-
-	let weights;
-
 	switch (interest) {
 		case 'student':
-			weights = {
-				education: 1.3,
-				work: 1.0,
-				transportation: 1.1,
-				safety: 1.0,
-				medicalcare: 1.0,
-				qualityOfLife: 1.0
-			};
-			break;
+			return { transportation: 1.1, medicalcare: 1.0, recreation: 1.1, education: 1.3, work: 1.0, qol: 1.0 };
 		case 'rodic':
-			weights = {
-				education: 1.0,
-				work: 0.9,
-				transportation: 1.1,
-				safety: 1.3,
-				medicalcare: 1.2,
-				qualityOfLife: 1.0
-			};
-			break;
+			return { transportation: 1.1, medicalcare: 1.2, recreation: 1.0, education: 1.0, work: 0.9, qol: 1.3 };
 		case 'pracujici':
-			weights = {
-				education: 0.7,
-				work: 1.4,
-				transportation: 1.2,
-				safety: 1.0,
-				medicalcare: 1.0,
-				qualityOfLife: 1.1
-			};
-			break;
+			return { transportation: 1.2, medicalcare: 1.0, recreation: 0.9, education: 0.7, work: 1.4, qol: 1.1 };
 		default:
-			// žádný zájem – všechny váhy 1
-			weights = {
-				education: 1,
-				work: 1,
-				transportation: 1,
-				safety: 1,
-				medicalcare: 1,
-				qualityOfLife: 1
-			};
+			return { transportation: 1, medicalcare: 1, recreation: 1, education: 1, work: 1, qol: 1 };
 	}
-
-	console.log('Selected interest:', interest);
-	console.log('Computed weights:', weights);
-
-	return weights;
 }
 
+// Convert 0-5 score to 0-100
+function toScore(s) {
+	return s != null ? Math.min(100, Math.round(s * 20)) : 0;
+}
 
+function applyWeight(score, weight) {
+	return Math.min(100, Math.round(score * weight));
+}
 
+function fmt(m) {
+	if (m == null) return 'N/A';
+	return m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`;
+}
 
 function parseReportData(input) {
 	const weights = getInterestWeights();
-	console.log(weights)
-	// Handle both formats: direct categories or nested in openData.data
 	const data = input.openData?.data || input.data || input;
 	const result = {};
 
-	// ====== TRANSPORTATION ======
+	// ====== DOPRAVA ======
 	if (data.transport) {
 		const t = data.transport;
-		const nearestStop = t.bus_stops?.[0]?.distance_m ?? null;
-		const lineCount = (t.bus_routes?.length ?? 0) + (t.train_routes?.length ?? 0);
+		const busStops = t.bus_stop || [];
+		const trainStops = t.train_stop || [];
+		const nearestBus = busStops[0]?.distance_m ?? null;
+		const nearestTrain = trainStops[0]?.distance_m ?? null;
 
 		result.transportation = {
-			score: roundScore(t.score * weights.transportation),
+			score: applyWeight(toScore(t.score), weights.transportation),
 			array: [
-				{
-					name: 'Vzdálenost k nejbližší zastávce',
-					value: nearestStop ? formatDistance(nearestStop) : 'N/A'
-				},
-				{
-					name: 'Počet linek v dosahu',
-					value: String(lineCount)
-				}
+				{ name: 'Nejbližší autobusová zastávka', value: fmt(nearestBus) },
+				{ name: 'Počet zastávek v dosahu', value: String(busStops.length) },
+				{ name: 'Nejbližší vlakové nádraží', value: fmt(nearestTrain) },
 			]
 		};
 
-		(t.bus_stops || []).forEach(stop =>
-			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#3b82f6')
-		);
-		(t.train_stations || []).forEach(stop =>
-			createMarker(window.reportMap, stop.coordinates.lat, stop.coordinates.lon, '#2563eb')
-		);
+		busStops.forEach(s => s.coordinates && createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#3b82f6'));
+		trainStops.forEach(s => s.coordinates && createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#2563eb'));
 	}
 
-	// ====== HEALTHCARE ======
+	// ====== ZDRAVOTNICTVÍ ======
 	if (data.healthcare) {
 		const h = data.healthcare;
-		const nearestHospital = h.hospitals?.[0]?.distance_m ?? null;
-		const doctorCount = (h.doctor_adult?.length ?? 0) + (h.doctor_child?.length ?? 0);
+		const sp = h.special || {};
 
 		result.medicalcare = {
-			score: roundScore(h.score * weights.medicalcare),
+			score: applyWeight(toScore(h.score), weights.medicalcare),
 			array: [
-				{
-					name: 'Vzdálenost k nemocnici',
-					value: nearestHospital ? formatDistance(nearestHospital) : 'N/A'
-				},
-				{
-					name: 'Počet lékařů v okolí',
-					value: String(doctorCount)
-				}
+				{ name: 'Praktický lékař', value: fmt(h.doctor_adult?.distance_m) },
+				{ name: 'Dětský lékař', value: fmt(h.doctor_child?.distance_m) },
+				{ name: 'Nemocnice', value: fmt(h.hospitals?.distance_m) },
+				{ name: 'Zubař', value: fmt(sp.dentist?.distance_m) },
+				{ name: 'Gynekolog', value: fmt(sp.outpatient_gynecologist?.distance_m) },
+				{ name: 'Rehabilitace', value: fmt(sp.rehabilitation_centre?.distance_m) },
 			]
 		};
 
-		(h.hospitals || []).forEach(hosp =>
-			createMarker(window.reportMap, hosp.coordinates.lat, hosp.coordinates.lon, '#ef4444')
-		);
+		if (h.hospitals?.coordinates) createMarker(window.reportMap, h.hospitals.coordinates.lat, h.hospitals.coordinates.lon, '#ef4444');
+		if (h.doctor_adult?.coordinates) createMarker(window.reportMap, h.doctor_adult.coordinates.lat, h.doctor_adult.coordinates.lon, '#f87171');
+		if (h.doctor_child?.coordinates) createMarker(window.reportMap, h.doctor_child.coordinates.lat, h.doctor_child.coordinates.lon, '#fca5a5');
 	}
 
-	// ====== EDUCATION ======
+	// ====== REKREACE ======
+	if (data.recreation) {
+		const r = data.recreation;
+		const ca = r.culture_and_arts || {};
+		const el = r.entertainment_and_leisure || {};
+		const hs = r.historical_sites || {};
+		const nat = r.nature || {};
+		const wl = r.wellness_and_lifestyle || {};
+
+		result.recreation = {
+			score: applyWeight(toScore(r.score), weights.recreation),
+			array: [
+				{ name: 'Kulturní centrum', value: fmt(ca.culture_centre?.distance_m) },
+				{ name: 'Knihovna', value: fmt(ca.library?.distance_m) },
+				{ name: 'Muzeum / galerie', value: fmt(ca.museum_and_gallery?.distance_m) },
+				{ name: 'Kino', value: fmt(el.cinema?.distance_m) },
+				{ name: 'Zábavní centrum', value: fmt(el.amusment_centre?.distance_m) },
+				{ name: 'Hrad / zámek', value: fmt((hs.castle ?? hs.chateau)?.distance_m) },
+				{ name: 'Přírodní zajímavost', value: fmt(nat.nature_curiosity?.distance_m) },
+				{ name: 'Lázně / wellness', value: fmt(wl.spa?.distance_m) },
+			]
+		};
+	}
+
+	// ====== VZDĚLÁNÍ ======
 	if (data.education) {
 		const e = data.education;
-		const schoolCount = (e.schools?.length ?? 0);
+		const s = e.school || {};
 
 		result.education = {
-			score: roundScore(e.score * weights.education),
+			score: applyWeight(toScore(e.score), weights.education),
 			array: [
-				{
-					name: 'Počet škol v okolí',
-					value: String(schoolCount)
-				},
-				{
-					name: 'Dostupnost střední školy',
-					value: (e.schools || []).some(s => s.type.toLowerCase().includes('gymnázium') || s.type.toLowerCase().includes('secondary'))
-						? 'Ano'
-						: 'Ne'
-				}
+				{ name: 'Mateřská škola', value: fmt(s.kindergarten?.distance_m) },
+				{ name: 'Základní škola', value: fmt(s.primary?.distance_m) },
+				{ name: 'Střední škola', value: fmt(s.high?.distance_m) },
+				{ name: 'Vysoká škola', value: fmt(s.university?.distance_m) },
+				{ name: 'ZUŠ', value: fmt(e.art_school?.distance_m) },
 			]
 		};
-
-		(e.schools || []).forEach(s =>
-			createMarker(window.reportMap, s.coordinates.lat, s.coordinates.lon, '#10b981')
-		);
 	}
 
-	// ====== WORK ======
+	// ====== PRÁCE ======
 	if (data.work) {
 		const w = data.work;
-		const zoneCount = w.industrial_zones?.length ?? 0;
-		const nearestZone = w.industrial_zones?.[0]?.distance_m ?? null;
 
 		result.work = {
-			score: roundScore(w.score * weights.work),
+			score: applyWeight(toScore(w.score), weights.work),
 			array: [
-				{ name: 'Počet průmyslových zón', value: String(zoneCount) },
-				{ name: 'Vzdálenost k nejbližší zóně', value: formatDistance(nearestZone) }
+				{ name: 'Průmyslová zóna', value: fmt(w.industrial_zone?.distance_m) },
 			]
 		};
 
-		(w.industrial_zones || []).forEach(z =>
-			createMarker(window.reportMap, z.coordinates.lat, z.coordinates.lon, '#f59e0b')
-		);
+		if (w.industrial_zone?.coordinates) {
+			createMarker(window.reportMap, w.industrial_zone.coordinates.lat, w.industrial_zone.coordinates.lon, '#f59e0b');
+		}
 	}
 
-	// ====== SAFETY ======
-	if (data.safety) {
-		const s = data.safety;
-		const waters = Object.keys(s)
-			.filter(k => k.endsWith('_water'))
-			.map(k => s[k])
-			.flat();
-		result.safety = {
-			score: roundScore(s.score * weights.safety),
-			array: [
-				{ name: 'Vodní plochy v okolí', value: String(waters.length) },
-				{ name: 'Největší plocha', value: `${Math.max(...waters.map(w => w.size || 0))} m²` }
-			]
-		};
-	}
+	// ====== QoL ======
+	if (data.qol) {
+		const q = data.qol;
+		const air = q.air_quality || {};
+		const flood = q.flood_risk || {};
+		const izs = q.izs || {};
+		const noise = q.noise || {};
 
-	// ====== NOISE ======
-	if (data.noise) {
-		const n = data.noise;
-		const avgNoiseDist = average([
-			...(n.bus_routes || []).map(r => r.distance_m),
-			...(n.train_routes || []).map(r => r.distance_m),
-			...(n.airports || []).map(r => r.distance_m)
-		]);
-		result.qualityOfLife = {
-			score: roundScore(n.score * weights.qualityOfLife),
+		const floodLabel = flood['5year']?.inside ? 'ANO – 5letá' :
+			flood['20year']?.inside ? 'ANO – 20letá' :
+			flood['100year']?.inside ? 'ANO – 100letá' : 'Ne';
+
+		result.qol = {
+			score: applyWeight(toScore(q.score), weights.qol),
 			array: [
-				{ name: 'Průměrná vzdálenost zdrojů hluku', value: formatDistance(avgNoiseDist) },
-				{ name: 'Počet zdrojů hluku', value: String(
-					(n.bus_routes?.length ?? 0) +
-					(n.train_routes?.length ?? 0) +
-					(n.airports?.length ?? 0)
-				)}
+				{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.value != null ? String(air.benzopyren.value) : 'N/A' },
+				{ name: 'Prach PM10 (μg/m³)', value: air.dust?.value != null ? String(air.dust.value) : 'N/A' },
+				{ name: 'Oxid dusičitý (μg/m³)', value: air.oxide?.value != null ? String(air.oxide.value) : 'N/A' },
+				{ name: 'Záplavová zóna', value: floodLabel },
+				{ name: 'Záchranná služba', value: fmt(izs.ambulance?.distance_m) },
+				{ name: 'Hasiči', value: fmt(izs.firefighter?.distance_m) },
+				{ name: 'Policie', value: fmt(izs.police?.distance_m) },
+				{ name: 'Hluk – vlak', value: fmt(noise.train_route?.distance_m) },
+				{ name: 'Hluk – letiště', value: fmt(noise.airport?.distance_m) },
+				{ name: 'Hluk – průmysl', value: fmt(noise.industrial_zone?.distance_m) },
 			]
 		};
 	}
@@ -247,15 +163,13 @@ function parseReportData(input) {
 	return result;
 }
 
-// ====== Helper Functions ======
 function roundScore(score) {
 	if (score > 100) return 100;
 	return score ? Math.round(score) : 0;
 }
 
 function formatDistance(m) {
-	if (m == null) return 'N/A';
-	return m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`;
+	return fmt(m);
 }
 
 function average(arr) {
