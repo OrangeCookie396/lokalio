@@ -1,15 +1,15 @@
-window.reportMap = L.map('report-map').setView([50.209, 15.832], 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+window.reportMap = L.map('report-map', { keyboard: false }).setView([50.209, 15.832], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
-	maxZoom: 17
+	maxZoom: 19
 }).addTo(window.reportMap);
 
-window.addMap = L.map('add-map').setView([50.209, 15.832], 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+window.addMap = L.map('add-map', { keyboard: false }).setView([50.209, 15.832], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
-	maxZoom: 17
+	maxZoom: 19
 }).addTo(window.addMap);
 
 // Marker creator
@@ -45,6 +45,8 @@ function switchTabs(index) {
 	tabs.forEach(t => t.classList.remove('active'));
 
 	tabs[index].classList.add('active');
+
+	window.scrollTo(0, 0);
 
 	setTimeout(() => {
 		window.reportMap.invalidateSize();

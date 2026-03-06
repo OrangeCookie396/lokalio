@@ -148,7 +148,7 @@ html {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	padding: 10px 24px;
+	padding: 12px 24px;
 	border-radius: 100px;
 	background: rgba(var(--teal-rgb), 0.2);
 	border: 1px solid rgba(var(--teal-rgb), 0.4);

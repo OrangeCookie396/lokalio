@@ -10,6 +10,7 @@
   "description": "",
   "main": "output_LLM.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

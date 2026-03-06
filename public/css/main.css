@@ -1,101 +1,93 @@
+html, body {
+	height: 100%;
+	overflow: hidden;
+}
+
 body {
 	height: 100vh;
 	width: 100vw;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	overflow: hidden;
-	background-color: var(--jet);
+	background-color: var(--platinum);
 }
 
 main {
 	height: 100vh;
 	width: 100vw;
 	display: flex;
+	flex-direction: column;
 	box-sizing: border-box;
 	position: relative;
 }
 
 main nav {
-	height: 100%;
-	width: 300px;
+	width: 100%;
+	flex-shrink: 0;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: center;
-	justify-content: space-between;
 	z-index: 100;
-	overflow: hidden;
 	box-sizing: border-box;
-	gap: 18px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	background-color: var(--jet);
+	padding: 20px 48px;
+	gap: 8px;
+	background-color: var(--snow);
+	border-bottom: 1px solid rgba(var(--silver-rgb), 0.25);
 }
 
 main nav #logo {
-	padding: 18px 12px;
-	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	text-decoration: none;
 }
 
 main nav #logo img {
 	height: 48px;
 	width: auto;
-	max-width: 100%;
 	object-fit: contain;
 }
 
-main nav .group {
+main nav .nav-links {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: center;
 	gap: 6px;
-	width: 100%;
-	flex: 1;
-	padding: 9px;
-	box-sizing: border-box;
+	margin-left: auto;
 }
 
-main nav .group:last-child {
-	justify-content: flex-end;
-}
-
-main nav .group a {
-	padding: 6px 15px;
+main nav .nav-links a {
+	padding: 9px 14px;
 	text-decoration: none;
-	color: var(--silver);
-	font-size: 0.9rem;
+	color: var(--slate);
+	font-size: 0.875rem;
 	transition: background-color 200ms ease, color 200ms ease;
 	box-sizing: border-box;
 	display: flex;
-	justify-content: flex-start;
 	align-items: center;
-	gap: 12px;
-	border-radius: 9px;
-	width: 100%;
-}
-
-main nav .group a:hover {
-	background-color: rgba(var(--silver-rgb), 0.12);
-	color: var(--snow);
-}
-
-main nav .group a svg {
-	width: 24px;
-	height: 24px;
-	flex-shrink: 0;
-}
-
-main nav .group a span {
+	gap: 8px;
+	border-radius: 100px;
 	white-space: nowrap;
 }
 
-main nav .group .divider {
-	width: 80%;
-	height: 2px;
-	border-radius: 100px;
-	background-color: rgba(var(--silver-rgb), 1);
-	margin: 6px 0;
+main nav .nav-links a:hover {
+	background-color: rgba(var(--silver-rgb), 0.2);
+	color: var(--jet);
+}
+
+main nav .nav-links a svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+main nav .nav-links a.primary {
+	background-color: var(--teal);
+	color: var(--snow);
+	padding: 9px 18px;
+	font-size: 0.875rem;
+}
+
+main nav .nav-links a.primary:hover {
+	background-color: var(--cyan);
+	color: var(--snow);
 }
 
 main h1 {
@@ -106,9 +98,8 @@ main h1 {
 main #content {
 	display: flex;
 	width: 100%;
+	flex: 1;
 	background-color: var(--platinum);
-	margin: 12px 12px 12px 300px;
-	border-radius: 12px;
 	overflow: hidden;
 }
 
@@ -168,4 +159,29 @@ main #content .tab .box {
 @keyframes toast-in {
 	0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
 	100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Responsive nav ──────────────────────────────── */
+
+@media (max-width: 600px) {
+	main nav {
+		padding: 0 14px;
+		height: 60px;
+	}
+
+	main nav #logo img {
+		height: 28px;
+	}
+
+	main nav .nav-links a span {
+		display: none;
+	}
+
+	main nav .nav-links a {
+		padding: 8px 10px;
+	}
+
+	main nav .nav-links a.primary {
+		padding: 8px 12px;
+	}
 }

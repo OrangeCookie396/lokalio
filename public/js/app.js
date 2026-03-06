@@ -6,8 +6,8 @@ async function searchAddress() {
 		return;
 	}
 
-	if (!window.selectedInterest) {
-		showError("Zvolte svůj profil (Student / Rodič / Pracující).");
+	if (!window.selectedProfile) {
+		showError("Zvolte svůj profil.");
 		return;
 	}
 
@@ -23,7 +23,7 @@ async function searchAddress() {
 
 		const result = await response.json();
 
-		switchTabs(1);
+		switchTabs(2);
 
 		createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#3b82f6');
 

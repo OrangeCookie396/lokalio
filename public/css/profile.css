@@ -1,0 +1,376 @@
+#profile {
+	flex-direction: column;
+	overflow-y: auto;
+	background-color: var(--platinum);
+}
+
+.wizard-inner {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+	padding: 36px 48px;
+	box-sizing: border-box;
+}
+
+/* ── Header ─────────────────────────────────────── */
+
+.wizard-header {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+}
+
+.wizard-title h2 {
+	font-size: 1.875rem;
+	font-weight: 600;
+	color: var(--jet);
+	margin-bottom: 6px;
+}
+
+.wizard-title p {
+	font-size: 1.05rem;
+	color: var(--slate);
+}
+
+/* Step indicator */
+.step-indicator {
+	display: flex;
+	align-items: flex-start;
+}
+
+.step-item {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+}
+
+.step-item .step {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	font-size: 0.9rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(var(--silver-rgb), 0.25);
+	color: var(--slate);
+	flex-shrink: 0;
+}
+
+.step-item .step-label {
+	font-size: 0.78rem;
+	font-weight: 500;
+	color: var(--silver);
+	text-align: center;
+	line-height: 1.3;
+}
+
+.step-item.done .step {
+	background-color: rgba(var(--teal-rgb), 0.15);
+	color: var(--teal);
+}
+
+.step-item.done .step-label {
+	color: var(--teal);
+}
+
+.step-item.active .step {
+	background-color: var(--teal);
+	color: var(--snow);
+}
+
+.step-item.active .step-label {
+	color: var(--teal);
+	font-weight: 600;
+}
+
+.step-indicator .step-line {
+	flex: 0 0 48px;
+	height: 2px;
+	border-radius: 1px;
+	background-color: rgba(var(--silver-rgb), 0.35);
+	margin-top: 18px;
+	align-self: flex-start;
+}
+
+/* ── Location chip ───────────────────────────────── */
+
+.location-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 14px;
+	border-radius: 100px;
+	background: rgba(var(--teal-rgb), 0.08);
+	color: var(--teal);
+	font-size: 0.9rem;
+	font-weight: 500;
+	align-self: flex-start;
+}
+
+.location-chip svg {
+	flex-shrink: 0;
+}
+
+/* ── Profile cards ───────────────────────────────── */
+
+.profile-cards {
+	display: flex;
+	gap: 14px;
+}
+
+.profile-card {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	border-radius: 100px;
+	background: var(--snow);
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+	user-select: none;
+}
+
+.profile-card:hover {
+	border-color: rgba(var(--teal-rgb), 0.3);
+	box-shadow: 0 2px 8px rgba(var(--teal-rgb), 0.08);
+}
+
+.profile-card.active {
+	border-color: var(--teal);
+	background: rgba(var(--teal-rgb), 0.05);
+}
+
+.card-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 100%;
+	background: rgba(var(--teal-rgb), 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--teal);
+	transition: background 180ms ease;
+}
+
+.card-icon svg {
+	width: 26px;
+	height: 26px;
+}
+
+.profile-card.active .card-icon {
+	background: rgba(var(--teal-rgb), 0.18);
+}
+
+.card-name {
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--jet);
+	text-align: center;
+}
+
+/* ── Categories grid ─────────────────────────────── */
+
+.categories-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px 20px;
+}
+
+.category {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 20px;
+	border-radius: 12px;
+}
+
+.cat-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.cat-name {
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--jet);
+}
+
+.cat-value {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--teal);
+	min-width: 16px;
+	text-align: right;
+}
+
+.cat-slider-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.slider-label {
+	font-size: 0.85rem;
+	color: var(--silver);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+/* Range slider */
+input[type="range"].category-slider {
+	-webkit-appearance: none;
+	appearance: none;
+	flex: 1;
+	height: 5px;
+	border-radius: 3px;
+	background: linear-gradient(
+		to right,
+		var(--teal) var(--fill, 50%),
+		rgba(var(--silver-rgb), 0.35) var(--fill, 50%)
+	);
+	outline: none;
+	cursor: pointer;
+	transition: opacity 180ms ease;
+}
+
+input[type="range"].category-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 17px;
+	height: 17px;
+	border-radius: 50%;
+	background: var(--teal);
+	cursor: pointer;
+	border: 2px solid var(--snow);
+	box-shadow: 0 1px 4px rgba(var(--jet-rgb), 0.2);
+	transition: background 180ms ease, transform 120ms ease;
+}
+
+input[type="range"].category-slider::-webkit-slider-thumb:hover {
+	transform: scale(1.15);
+}
+
+input[type="range"].category-slider:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+input[type="range"].category-slider:disabled::-webkit-slider-thumb {
+	cursor: default;
+	transform: none;
+	background: var(--slate);
+}
+
+/* ── Wizard actions ──────────────────────────────── */
+
+.wizard-actions {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.wizard-actions button {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px 28px;
+	border-radius: 100px;
+	border: none;
+	font-family: Lexend;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 180ms ease, color 180ms ease;
+}
+
+.wizard-actions button svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+.btn-back {
+	background: rgba(var(--silver-rgb), 0.2);
+	color: var(--slate);
+}
+
+.btn-back:hover {
+	background: rgba(var(--silver-rgb), 0.35);
+	color: var(--jet);
+}
+
+.btn-primary {
+	background: var(--teal);
+	color: var(--snow);
+	font-weight: 500;
+}
+
+.btn-primary:hover {
+	background: var(--cyan);
+}
+
+.btn-primary:disabled {
+	background: rgba(var(--silver-rgb), 0.35);
+	color: var(--slate);
+	cursor: not-allowed;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 720px) {
+	.wizard-inner {
+		padding: 24px 24px;
+		gap: 20px;
+	}
+
+	.categories-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.profile-cards {
+		gap: 10px;
+	}
+
+	.profile-card {
+		padding: 14px 8px;
+		gap: 10px;
+	}
+
+	.card-name {
+		font-size: 0.875rem;
+	}
+}
+
+@media (max-width: 500px) {
+	.step-indicator .step-line {
+		flex-basis: 16px;
+	}
+
+	.wizard-title h2 {
+		font-size: 1.375rem;
+	}
+
+	.profile-cards {
+		flex-wrap: wrap;
+	}
+
+	.profile-card {
+		flex: 1 1 calc(33% - 10px);
+		min-width: 80px;
+	}
+
+	.slider-label {
+		display: none;
+	}
+
+	.wizard-actions button {
+		padding: 11px 18px;
+		font-size: 0.9rem;
+	}
+}

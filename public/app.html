@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="css/general.css"></style>
 	<link rel="stylesheet" href="css/main.css"></style>
 	<link rel="stylesheet" href="css/add.css"></style>
+	<link rel="stylesheet" href="css/profile.css"></style>
 	<link rel="stylesheet" href="css/loading.css"></style>
 	<link rel="stylesheet" href="css/overview.css"></style>
 
@@ -18,53 +19,37 @@
 	<script src="js/overviewParser.js" defer></script>
 	<script src="js/app.js" defer></script>
 	<script src="js/add.js" defer></script>
+	<script src="js/profile.js" defer></script>
 	<script src="js/overview.js" defer></script>
 	<script src="js/loading.js" defer></script>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 	<script src="resources/anime.iife.min.js"></script>
 	<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 	<main>
 		<nav>
 			<a href="/" id="logo">
-				<img src="img/logo-light.svg" alt="Logo">
+				<img src="img/logo-dark.svg" alt="Logo">
 			</a>
 
-			<div class="group">
-				<a href="/">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m21 21l-4.34-4.34"/><circle cx="11" cy="11" r="8"/></g></svg>
-					<span>Prozkoumat lokaci</span>
-				</a>
-
-				<div class="divider"></div>
-				
+			<div class="nav-links">
 				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 0 1 7.38 16.75M12 6v6l4 2M2.5 8.875a10 10 0 0 0-.5 3M2.83 16a10 10 0 0 0 2.43 3.4M4.636 5.235a10 10 0 0 1 .891-.857M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5m4-1v5l4 2"/></g></svg>
 					<span>Historie</span>
 				</a>
-				
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0zm.894.211v15M9 3.236v15"/></svg>
-					<span>Oblasti</span>
-				</a>
-			</div>
 
-			<div class="group">
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 17H5M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></g></svg>
-					<span>Nastavení</span>
-				</a>
-
-				<a href="#">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></g></svg>
-					<span>Profil</span>
+				<a href="app.html" class="primary">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m21 21l-4.34-4.34"/><circle cx="11" cy="11" r="8"/></g></svg>
+					<span>Prozkoumat lokaci</span>
 				</a>
 			</div>
 		</nav>
 
 		<div id="content">
+			<!-- Step 1: Location -->
 			<div id="add" class="tab active">
 				<div id="add-map"></div>
 
@@ -73,19 +58,167 @@
 						<p>Klikněte na požadované místo na mapě, které chcete analyzovat</p>
 					</div>
 
-					<div class="box picker">
-						<select id="interest-picker" name="interest">
-							<option value="" disabled selected>-- Zvolte možnost --</option>
-							<option value="student">Student</option>
-							<option value="rodic">Rodič</option>
-							<option value="pracujici">Pracující</option>
-						</select>
-					</div>
-
-					<div class="box button" onclick="searchAddress()">Hledej</div>
+					<div class="box button disabled" id="btn-next" onclick="switchTabs(1)">Dále <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7l-7 7"/></svg></div>
 				</div>
 			</div>
 
+			<!-- Step 2: Profile -->
+			<div id="profile" class="tab">
+				<div class="wizard-inner">
+
+					<div class="wizard-header">
+						<div class="step-indicator">
+							<div class="step-item done">
+								<span class="step">1</span>
+								<span class="step-label">Lokace</span>
+							</div>
+							<span class="step-line"></span>
+							<div class="step-item active">
+								<span class="step">2</span>
+								<span class="step-label">Profil</span>
+							</div>
+							<span class="step-line"></span>
+							<div class="step-item">
+								<span class="step">3</span>
+								<span class="step-label">Zpracování dat</span>
+							</div>
+							<span class="step-line"></span>
+							<div class="step-item">
+								<span class="step">4</span>
+								<span class="step-label">Výsledek</span>
+							</div>
+						</div>
+						<div class="wizard-title">
+							<h2>Vyberte profil</h2>
+							<p>Zvolte přednastavený profil nebo si nastavte vlastní váhy kategorií</p>
+						</div>
+
+						<div class="location-chip" id="location-chip">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/></svg>
+							<span id="location-text">—</span>
+						</div>
+					</div>
+
+					<div class="profile-cards">
+						<div class="profile-card active" data-profile="default" onclick="selectProfile('default')">
+							<div class="card-icon">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76l-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></g></svg>
+							</div>
+							<span class="card-name">Výchozí</span>
+						</div>
+
+						<div class="profile-card" data-profile="pracujici" onclick="selectProfile('pracujici')">
+							<div class="card-icon">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 12h.01M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m14 7a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></g></svg>
+							</div>
+							<span class="card-name">Pracující</span>
+						</div>
+
+						<div class="profile-card" data-profile="rodina" onclick="selectProfile('rodina')">
+							<div class="card-icon">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></g></svg>
+							</div>
+							<span class="card-name">Rodina</span>
+						</div>
+
+						<div class="profile-card" data-profile="student" onclick="selectProfile('student')">
+							<div class="card-icon">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0zM22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></g></svg>
+							</div>
+							<span class="card-name">Student</span>
+						</div>
+
+						<div class="profile-card" data-profile="custom" onclick="selectProfile('custom')">
+							<div class="card-icon">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5H3m9 14H3M14 3v4m2 10v4m5-9h-9m9 7h-5m5-14h-7m-6 5v4m0-2H3"/></svg>
+							</div>
+							<span class="card-name">Vlastní</span>
+						</div>
+					</div>
+
+					<div class="categories-grid">
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Doprava &amp; dostupnost</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Školství &amp; vzdělání</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Zdravotnictví</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Sport &amp; volný čas</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Příroda &amp; parky</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+
+						<div class="category">
+							<div class="cat-header">
+								<span class="cat-name">Obchody &amp; služby</span>
+								<span class="cat-value">3</span>
+							</div>
+							<div class="cat-slider-row">
+								<span class="slider-label">Nezajímá mě</span>
+								<input type="range" class="category-slider" min="1" max="5" value="3">
+								<span class="slider-label">Zajímá mě</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="wizard-actions">
+						<button class="btn-back" onclick="switchTabs(0)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 19l-7-7l7-7m7 7H5"/></svg> Zpět</button>
+						<button class="btn-primary" id="btn-analyze" disabled onclick="searchAddress()">Analyzovat <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7l-7 7"/></svg></button>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Step 3: Overview -->
 			<div id="overview" class="tab">
 				<div id="report-map"></div>
 				<div id="categories"></div>
@@ -114,5 +247,9 @@
 			<span class="rotating" style="animation: 500ms forwards slide-in;">Pracuji</span>
 		</div>
 	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+	</script>
 </body>
 </html>
