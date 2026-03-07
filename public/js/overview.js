@@ -361,74 +361,138 @@ function showDetail(cat, meta, key = null) {
 	// Stats list
 	const statsList = document.createElement('div');
 	statsList.className = 'cat-detail-stats';
-	(cat.array || []).forEach(item => {
+
+	function makeChevronSpan() {
+		const chevron = document.createElement('span');
+		chevron.className = 'ds-chevron';
+		const ns = 'http://www.w3.org/2000/svg';
+		const svg = document.createElementNS(ns, 'svg');
+		svg.setAttribute('width', '14'); svg.setAttribute('height', '14');
+		svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none');
+		svg.setAttribute('stroke', 'currentColor'); svg.setAttribute('stroke-width', '2.5');
+		svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+		const p = document.createElementNS(ns, 'path');
+		p.setAttribute('d', 'm6 9 6 6 6-6');
+		svg.appendChild(p);
+		chevron.appendChild(svg);
+		return chevron;
+	}
+
+	function buildEntityList(entities, color) {
+		const ul = document.createElement('ul');
+		ul.className = 'ds-entity-list';
+		entities.forEach(e => {
+			const li = document.createElement('li');
+			const entName = document.createElement('span');
+			entName.className = 'ent-name';
+			entName.textContent = e.name || '\u2014';
+			li.appendChild(entName);
+			if (e.distance_m != null) {
+				const entDist = document.createElement('span');
+				entDist.className = 'ent-dist';
+				entDist.textContent = fmt(e.distance_m);
+				li.appendChild(entDist);
+			}
+			if (e.lat) {
+				li.classList.add('ent-mappable');
+				li.title = 'Zobrazit na map\u011b';
+				li.addEventListener('click', ev => {
+					ev.stopPropagation();
+					if (window._entityPinMarker) window._entityPinMarker.remove();
+					window._entityPinMarker = createMarker(window.reportMap, e.lat, e.lon, color, 40);
+					window.reportMap?.setView([e.lat, e.lon], Math.max(window.reportMap.getZoom(), 15));
+					ul.querySelectorAll('li').forEach(l => l.classList.remove('ent-active'));
+					li.classList.add('ent-active');
+				});
+			}
+			ul.appendChild(li);
+		});
+		return ul;
+	}
+
+	function buildStatRow(item, color, isChild) {
 		const entities = (item.entities || []).filter(e => e.name || e.distance_m != null);
 		const hasEntities = entities.length > 0;
 
 		const wrap = document.createElement('div');
-		wrap.className = 'cat-detail-stat-wrap';
+		wrap.className = 'cat-detail-stat-wrap' + (isChild ? ' child-wrap' : '');
 
 		const row = document.createElement('div');
-		row.className = 'cat-detail-stat' + (hasEntities ? ' expandable' : '');
+		row.className = 'cat-detail-stat' + (isChild ? ' child-stat' : '') + (hasEntities ? ' expandable' : '');
 
 		const nameSpan = document.createElement('span');
 		nameSpan.className = 'ds-name';
 		nameSpan.textContent = item.name;
-
 		const valSpan = document.createElement('span');
 		valSpan.className = 'ds-value';
 		valSpan.textContent = item.value;
-
 		row.appendChild(nameSpan);
 		row.appendChild(valSpan);
 
 		if (hasEntities) {
-			const chevron = document.createElement('span');
-			chevron.className = 'ds-chevron';
-			chevron.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
-			row.appendChild(chevron);
-
-			const entityList = document.createElement('ul');
-			entityList.className = 'ds-entity-list';
-
-			entities.forEach(e => {
-				const li = document.createElement('li');
-				const nameText = e.name || '—';
-				const distText = e.distance_m != null ? fmt(e.distance_m) : '';
-				li.innerHTML = `<span class="ent-name">${nameText}</span>${distText ? `<span class="ent-dist">${distText}</span>` : ''}`;
-
-				if (e.lat) {
-					li.classList.add('ent-mappable');
-					li.title = 'Zobrazit na mapě';
-					li.addEventListener('click', ev => {
-						ev.stopPropagation();
-						if (window._entityPinMarker) window._entityPinMarker.remove();
-						window._entityPinMarker = createMarker(window.reportMap, e.lat, e.lon, meta.color, 40);
-						window.reportMap?.setView([e.lat, e.lon], Math.max(window.reportMap.getZoom(), 15));
-						entityList.querySelectorAll('li').forEach(l => l.classList.remove('ent-active'));
-						li.classList.add('ent-active');
-					});
-				}
-
-				entityList.appendChild(li);
-			});
-
+			row.appendChild(makeChevronSpan());
+			const entityList = buildEntityList(entities, color);
 			row.addEventListener('click', () => {
 				const open = wrap.classList.toggle('open');
 				entityList.style.maxHeight = open ? Math.min(entityList.scrollHeight, 220) + 'px' : '0';
 			});
-
 			wrap.appendChild(row);
 			wrap.appendChild(entityList);
 		} else {
 			wrap.appendChild(row);
 		}
+		return wrap;
+	}
 
-		statsList.appendChild(wrap);
+	(cat.array || []).forEach(item => {
+		if (item.isGroup) {
+			const wrap = document.createElement('div');
+			wrap.className = 'cat-detail-stat-wrap group-wrap';
+
+			const row = document.createElement('div');
+			row.className = 'cat-detail-stat group-header expandable';
+
+			const nameSpan = document.createElement('span');
+			nameSpan.className = 'ds-name ds-name-group';
+			nameSpan.textContent = item.name;
+			const valSpan = document.createElement('span');
+			valSpan.className = 'ds-value';
+			valSpan.textContent = item.value;
+			row.appendChild(nameSpan);
+			row.appendChild(valSpan);
+			row.appendChild(makeChevronSpan());
+
+			const childrenList = document.createElement('div');
+			childrenList.className = 'ds-children-list';
+			(item.children || []).forEach(child => {
+				childrenList.appendChild(buildStatRow(child, meta.color, true));
+			});
+
+			row.addEventListener('click', () => {
+				const open = wrap.classList.toggle('open');
+				if (open) {
+					childrenList.style.maxHeight = childrenList.scrollHeight + 'px';
+					childrenList.addEventListener('transitionend', function h() {
+						childrenList.style.maxHeight = 'none';
+						childrenList.removeEventListener('transitionend', h);
+					}, { once: true });
+				} else {
+					childrenList.style.maxHeight = childrenList.scrollHeight + 'px';
+					requestAnimationFrame(() => { childrenList.style.maxHeight = '0'; });
+				}
+			});
+
+			wrap.appendChild(row);
+			wrap.appendChild(childrenList);
+			statsList.appendChild(wrap);
+		} else {
+			statsList.appendChild(buildStatRow(item, meta.color, false));
+		}
 	});
 	panel.appendChild(statsList);
 
 	panel.classList.add('visible');
+	panel.scrollTop = 0;
 
 	requestAnimationFrame(() => requestAnimationFrame(() => {
 		dFill.style.strokeDashoffset = dCirc * (1 - cat.score / 100);

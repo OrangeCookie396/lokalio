@@ -147,11 +147,13 @@ function parseReportData(input) {
 				{ name: 'Kulturní centrum', value: fmt(dist(ca.culture_centre)), entities: ca.culture_centre?.entities },
 				{ name: 'Knihovna', value: fmt(dist(ca.library)), entities: ca.library?.entities },
 				{ name: 'Muzeum / galerie', value: fmt(dist(ca.museum_and_gallery)), entities: ca.museum_and_gallery?.entities },
+				{ name: 'Divadlo', value: fmt(dist(ca.theatre_and_orchestra)), entities: ca.theatre_and_orchestra?.entities },
 				{ name: 'Kino', value: fmt(dist(el.cinema)), entities: el.cinema?.entities },
 				{ name: 'Zábavní centrum', value: fmt(dist(el.amusement_centre)), entities: el.amusement_centre?.entities },
 				{ name: 'Hrad / zámek', value: fmt(historicalDist), entities: castleAll },
 				{ name: 'Přírodní zajímavost', value: fmt(dist(nat.nature_curiosity)), entities: nat.nature_curiosity?.entities },
 				{ name: 'Lázně / wellness', value: fmt(dist(wl.spa)), entities: wl.spa?.entities },
+				{ name: 'Pivovar', value: fmt(dist(wl.beer_brewery)), entities: wl.beer_brewery?.entities },
 			]
 		};
 
@@ -217,19 +219,55 @@ function parseReportData(input) {
 			flood['20year']?.entities?.some(e => e.inside) ? 'ANO – 20letá' :
 			flood['100year']?.entities?.some(e => e.inside) ? 'ANO – 100letá' : 'Ne';
 
+		// IZS: nearest distance across all services
+		const izsDistances = [dist(izs.ambulance), dist(izs.firefighter), dist(izs.police)].filter(d => d != null);
+		const nearestIZS = izsDistances.length > 0 ? Math.min(...izsDistances) : null;
+
+		// Noise: combine additively (each source contributes noise penalty = 5 - value)
+		const noiseSources = [
+			{ name: 'Vlak', node: noise.train_route },
+			{ name: 'Letiště', node: noise.airport },
+			{ name: 'Průmysl', node: noise.industrial_zone },
+		].filter(s => s.node != null);
+		const noisePenalties = noiseSources.filter(s => s.node.value != null).map(s => Math.max(0, 5 - s.node.value));
+		const totalNoisePenalty = Math.min(5, noisePenalties.reduce((a, b) => a + b, 0));
+		const noiseLabels = ['Žádný', 'Nízký', 'Mírný', 'Střední', 'Vysoký', 'Velmi vysoký'];
+		const combinedNoiseLabel = noiseLabels[Math.round(totalNoisePenalty)] || 'N/A';
+
 		result.qol = {
 			score: applyWeight(toScore(q.value), weights.qol),
 			array: [
-				{ name: 'Benzo[a]pyren (ng/m³)', value: 'N/A' },
-				{ name: 'Prach PM10 (μg/m³)', value: 'N/A' },
-				{ name: 'Oxid dusičitý (μg/m³)', value: 'N/A' },
+				{
+					name: 'Kvalita ovzduší',
+					value: air.value != null ? getScoreText(toScore(air.value)) : 'N/A',
+					isGroup: true,
+					children: [
+						{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.measured != null ? air.benzopyren.measured.toFixed(2) : 'N/A', entities: filterE(air.benzopyren?.entities, 3) },
+						{ name: 'Prach PM10 (μg/m³)', value: air.dust?.measured != null ? air.dust.measured.toFixed(2) : 'N/A', entities: filterE(air.dust?.entities, 3) },
+						{ name: 'Oxid dusičitý (μg/m³)', value: air.oxide?.measured != null ? air.oxide.measured.toFixed(2) : 'N/A', entities: filterE(air.oxide?.entities, 3) },
+					],
+				},
 				{ name: 'Záplavová zóna', value: floodLabel },
-				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: filterE(izs.ambulance?.entities, 3) },
-				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: filterE(izs.firefighter?.entities, 3) },
-				{ name: 'Policie', value: fmt(dist(izs.police)), entities: filterE(izs.police?.entities, 3) },
-				{ name: 'Hluk – vlak', value: fmt(dist(noise.train_route)), entities: filterE(noise.train_route?.entities, 3) },
-				{ name: 'Hluk – letiště', value: fmt(dist(noise.airport)), entities: filterE(noise.airport?.entities, 3) },
-				{ name: 'Hluk – průmysl', value: fmt(dist(noise.industrial_zone)), entities: filterE(noise.industrial_zone?.entities, 3) },
+				{
+					name: 'IZS',
+					value: fmt(nearestIZS),
+					isGroup: true,
+					children: [
+						{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: filterE(izs.ambulance?.entities, 3) },
+						{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: filterE(izs.firefighter?.entities, 3) },
+						{ name: 'Policie', value: fmt(dist(izs.police)), entities: filterE(izs.police?.entities, 3) },
+					],
+				},
+				{
+					name: 'Hluk',
+					value: combinedNoiseLabel,
+					isGroup: true,
+					children: noiseSources.map(s => ({
+						name: `Hluk – ${s.name}`,
+						value: fmt(dist(s.node)),
+						entities: filterE(s.node?.entities, 3),
+					})),
+				},
 			]
 		};
 	}

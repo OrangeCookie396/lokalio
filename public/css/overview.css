@@ -315,7 +315,7 @@ main #report-map {
 .cat-detail-stats {
 	background: var(--snow);
 	border-radius: 16px;
-	overflow: hidden;
+	overflow: visible;
 	box-shadow: 0 1px 4px rgba(var(--black-rgb), 0.05);
 }
 
@@ -373,12 +373,17 @@ main #report-map {
 .ds-entity-list {
 	list-style: none;
 	margin: 0;
-	padding: 0 18px 8px;
+	padding: 0 18px;
 	max-height: 0;
-	overflow-y: auto;
+	overflow: hidden;
 	transition: max-height 0.25s ease;
 	background: var(--snow);
 	border-bottom: 1px solid rgba(var(--silver-rgb), 0.12);
+}
+
+.cat-detail-stat-wrap.open .ds-entity-list {
+	overflow-y: auto;
+	padding-bottom: 8px;
 }
 
 .cat-detail-stat-wrap:last-child .ds-entity-list {
@@ -435,6 +440,50 @@ main #report-map {
 
 .ent-active .ent-dist {
 	color: var(--jet);
+}
+
+/* ── Group items (IZS, air quality, noise) ────────── */
+
+.group-header {
+	font-weight: 600;
+	background: rgba(var(--silver-rgb), 0.06);
+}
+
+.group-header .ds-name-group {
+	font-weight: 600;
+	color: var(--jet);
+}
+
+.ds-children-list {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.28s ease;
+	border-bottom: 1px solid rgba(var(--silver-rgb), 0.12);
+}
+
+.group-wrap:last-child .ds-children-list {
+	border-bottom: none;
+}
+
+.group-wrap.open .ds-children-list {
+	overflow: visible;
+}
+
+.child-stat {
+	padding-left: 28px;
+	background: rgba(var(--silver-rgb), 0.04);
+}
+
+.child-stat .ds-name {
+	font-size: 0.82rem;
+}
+
+.child-stat .ds-value {
+	font-size: 0.82rem;
+}
+
+.child-wrap:last-child .child-stat {
+	border-bottom: none;
 }
 
 /* ── Summary banner ──────────────────────────────── */
