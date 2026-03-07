@@ -25,6 +25,8 @@ export const T = {
 
 	// --- Work ---
 	industrial_zone: [[500, 5], [3000, 4], [10000, 3], [15000, 2], [30000, 1]],
+	// Job opportunities: weighted capacity within 5km radius
+	job_capacity: [[50, 1], [150, 2], [400, 3], [1000, 4]],
 
 	// --- QoL: IZS ---
 	izs: [[2000, 5], [4000, 4], [7000, 3], [10000, 2], [15000, 1]],
@@ -82,6 +84,14 @@ export function idwInterpolate(userLat, userLon, stations, maxStations = 3) {
 	const reductionFactor = REF_DIST / (REF_DIST + nearestDist);
 
 	return rawValue * reductionFactor;
+}
+
+// Katpo (ČSÚ company size category) -> weight for job capacity
+export function katpoWeight(katpo) {
+	if (katpo >= 410) return 5;
+	if (katpo >= 310) return 3;
+	if (katpo >= 210) return 2;
+	return 1;
 }
 
 export const ROAD_QUALITY_MAP = {

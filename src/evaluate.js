@@ -12,6 +12,7 @@ import {
 	score,
 	idwInterpolate,
 	ROAD_QUALITY_MAP,
+	katpoWeight,
 	avgScores,
 } from "./lib/scoring.js";
 import { generateSummary } from "./lib/summary.js";
@@ -446,9 +447,46 @@ async function evalWork(lat, lon) {
 	);
 	const izScore = scoreNearest(entities, T.industrial_zone);
 
+	// Job opportunities: weighted capacity of companies within 5km
+	const companiesData = await load("data/job_opportunities/companies.geojson");
+	const RADIUS = 5000;
+	let capacity = 0;
+	let companyCount = 0;
+	const topCompanies = [];
+
+	for (const f of companiesData.features) {
+		const c = getPointLatLon(f);
+		if (!c) continue;
+		const d = haversine(lat, lon, c.lat, c.lon);
+		if (d <= RADIUS) {
+			const w = katpoWeight(f.properties.katpo);
+			capacity += w;
+			companyCount++;
+			// Track largest companies for entities
+			if (f.properties.katpo >= 210) {
+				topCompanies.push({
+					lat: c.lat,
+					lon: c.lon,
+					name: f.properties.nazev,
+					distance_m: Math.round(d),
+					katpo: f.properties.katpo,
+				});
+			}
+		}
+	}
+
+	topCompanies.sort((a, b) => b.katpo - a.katpo || a.distance_m - b.distance_m);
+	const jobScore = score(capacity, T.job_capacity, 5);
+
 	return {
-		value: izScore,
+		value: avgScores([izScore, jobScore]),
 		industrial_zone: leaf(izScore, entities),
+		job_opportunities: {
+			value: jobScore,
+			capacity,
+			company_count: companyCount,
+			entities: topCompanies.slice(0, MAX_ENTITIES),
+		},
 	};
 }
 
