@@ -51,7 +51,7 @@ export async function generateSummary(result) {
 					content: `Hodnocení lokality na souřadnicích ${result.coordinates.lat}, ${result.coordinates.lon}:\n\n${scoreData}`,
 				},
 			],
-			model: process.env.AZURE_MODEL_NAME || "o4-mini",
+			model: process.env.AZURE_MODEL_NAME || "grok-4-fast-reasoning",
 			max_completion_tokens: 4000,
 		});
 
