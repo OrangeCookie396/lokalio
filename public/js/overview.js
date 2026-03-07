@@ -96,6 +96,9 @@ function generateReport(data) {
 	const { svg: heroSvg, fill: heroFill, circ: heroCirc } = makeSVGRing(72, '#ffffff', 7, 0.2);
 	rings.push({ fill: heroFill, circ: heroCirc, score: total });
 
+	const heroTop = document.createElement('div');
+	heroTop.className = 'hero-top';
+
 	const heroRing = document.createElement('div');
 	heroRing.className = 'hero-ring';
 	heroRing.appendChild(heroSvg);
@@ -111,7 +114,7 @@ function generateReport(data) {
 	heroLabel.appendChild(heroScore);
 	heroLabel.appendChild(heroMax);
 	heroRing.appendChild(heroLabel);
-	hero.appendChild(heroRing);
+	heroTop.appendChild(heroRing);
 
 	const heroInfo = document.createElement('div');
 	heroInfo.className = 'hero-info';
@@ -134,14 +137,14 @@ function generateReport(data) {
 	locChip.innerHTML = pinIcon + locText;
 	heroInfo.appendChild(locChip);
 
-	hero.appendChild(heroInfo);
-	container.appendChild(hero);
+	heroTop.appendChild(heroInfo);
+	hero.appendChild(heroTop);
 
-	// ── Summary accordion ──────────────────────────────
+	// ── Summary accordion inside hero ──────────────────
 	const summary = data.summary || (data.openData?.data || data.data || data).summary || null;
 	if (summary) {
 		const accordion = document.createElement('div');
-		accordion.className = 'summary-accordion';
+		accordion.className = 'summary-accordion hero-summary';
 
 		const btn = document.createElement('button');
 		btn.className = 'summary-banner';
@@ -160,13 +163,14 @@ function generateReport(data) {
 		btn.addEventListener('click', () => {
 			const open = accordion.classList.toggle('open');
 			body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
-			grid.style.display = open ? 'none' : 'grid';
 		});
 
 		accordion.appendChild(btn);
 		accordion.appendChild(body);
-		container.appendChild(accordion);
+		hero.appendChild(accordion);
 	}
+
+	container.appendChild(hero);
 
 	// ── Category grid ──────────────────────────────────
 	const grid = document.createElement('div');
