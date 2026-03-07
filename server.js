@@ -8,6 +8,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.get("/reverse", async (req, res) => {
+	const { lat, lon } = req.query;
+	if (!lat || !lon) return res.status(400).json({ error: "Missing lat/lon" });
+	try {
+		const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=cs`;
+		const r = await fetch(url, { headers: { "User-Agent": "lokalio/1.0" } });
+		const data = await r.json();
+		res.json(data);
+	} catch (e) {
+		res.status(500).json({ error: "Reverse geocoding failed" });
+	}
+});
+
 app.get("/evaluate", async (req, res) => {
 	const lat = parseFloat(req.query.lat);
 	const lon = parseFloat(req.query.lon);

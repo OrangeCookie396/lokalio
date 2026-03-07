@@ -174,7 +174,7 @@
 		input.value = '';
 
 		try {
-			const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}&format=json&accept-language=cs`);
+			const res = await fetch(`/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
 			const data = await res.json();
 			const a = data.address || {};
 			const parts = [a.road, a.house_number, a.city || a.town || a.village || a.municipality].filter(Boolean);
