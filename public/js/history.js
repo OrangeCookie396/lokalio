@@ -46,6 +46,7 @@
 			lat,
 			lon,
 			profile: window.selectedProfile || 'default',
+			sliderValues: [...document.querySelectorAll('.category-slider')].map(s => parseInt(s.value) || 3),
 			score: computeScore(data),
 			data,
 		});
@@ -125,7 +126,9 @@
 
 	function formatDate(iso) {
 		const d = new Date(iso);
-		return d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric' });
+		const date = d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric' });
+		const time = d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+		return `${date}, ${time}`;
 	}
 
 	function historyRender() {
@@ -167,7 +170,16 @@
 				if (!entry) return;
 
 				historyClose();
-				window.selectedProfile = entry.profile;
+				// Restore profile and exact slider values from the time of analysis
+				selectProfile(entry.profile);
+				if (entry.sliderValues) {
+					document.querySelectorAll('.category-slider').forEach((s, i) => {
+						s.value = entry.sliderValues[i] ?? 3;
+					});
+					if (entry.profile === 'custom' && typeof profileData !== 'undefined') {
+						profileData.custom.values = [...entry.sliderValues];
+					}
+				}
 				document.getElementById('location-text').textContent = entry.address;
 
 				switchTabs(2);
@@ -181,6 +193,7 @@
 					window.allReportMarkers.push(userMarker);
 					window.userLocationMarker = userMarker;
 				}
+				window.reportMap?.setView([entry.lat, entry.lon], 14);
 
 				generateReport(entry.data);
 			});
