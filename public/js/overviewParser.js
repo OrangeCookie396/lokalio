@@ -244,37 +244,18 @@ function parseReportData(input) {
 		result.qol = {
 			score: applyWeight(toScore(q.value), weights.qol),
 			array: [
-				{
-					name: 'Kvalita ovzduší',
-					value: air.value != null ? getScoreText(toScore(air.value)) : 'N/A',
-					isGroup: true,
-					children: [
-						{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.measured != null ? air.benzopyren.measured.toFixed(2) : 'N/A', entities: filterE(air.benzopyren?.entities, 3) },
-						{ name: 'Prach PM10 (μg/m³)', value: air.dust?.measured != null ? air.dust.measured.toFixed(2) : 'N/A', entities: filterE(air.dust?.entities, 3) },
-						{ name: 'Oxid dusičitý (μg/m³)', value: air.oxide?.measured != null ? air.oxide.measured.toFixed(2) : 'N/A', entities: filterE(air.oxide?.entities, 3) },
-					],
-				},
+				{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.measured != null ? air.benzopyren.measured.toFixed(2) : 'N/A', entities: filterE(air.benzopyren?.entities, 3) },
+				{ name: 'Prach PM10 (μg/m³)', value: air.dust?.measured != null ? air.dust.measured.toFixed(2) : 'N/A', entities: filterE(air.dust?.entities, 3) },
+				{ name: 'Oxid dusičitý (μg/m³)', value: air.oxide?.measured != null ? air.oxide.measured.toFixed(2) : 'N/A', entities: filterE(air.oxide?.entities, 3) },
 				{ name: 'Záplavová zóna', value: floodLabel },
-				{
-					name: 'IZS',
-					value: fmt(nearestIZS),
-					isGroup: true,
-					children: [
-						{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: filterE(izs.ambulance?.entities, 3) },
-						{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: filterE(izs.firefighter?.entities, 3) },
-						{ name: 'Policie', value: fmt(dist(izs.police)), entities: filterE(izs.police?.entities, 3) },
-					],
-				},
-				{
-					name: 'Hluk',
-					value: combinedNoiseLabel,
-					isGroup: true,
-					children: noiseSources.map(s => ({
-						name: `Hluk – ${s.name}`,
-						value: fmt(dist(s.node)),
-						entities: filterE(s.node?.entities, 3),
-					})),
-				},
+				{ name: 'Záchranná služba', value: fmt(dist(izs.ambulance)), entities: filterE(izs.ambulance?.entities, 3) },
+				{ name: 'Hasiči', value: fmt(dist(izs.firefighter)), entities: filterE(izs.firefighter?.entities, 3) },
+				{ name: 'Policie', value: fmt(dist(izs.police)), entities: filterE(izs.police?.entities, 3) },
+				...noiseSources.map(s => ({
+					name: `Hluk – ${s.name}`,
+					value: fmt(dist(s.node)),
+					entities: filterE(s.node?.entities, 3),
+				})),
 			]
 		};
 	}
