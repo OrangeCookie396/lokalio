@@ -141,7 +141,7 @@ main #content .tab .box {
 
 #loading #background .ball {
 	aspect-ratio: 1 / 1;
-	width: 70vw;
+	width: 40vw;
 	max-width: 500px;
 	border-radius: 50%;
 	position: absolute;
