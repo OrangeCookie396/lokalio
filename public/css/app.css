@@ -193,27 +193,109 @@ main #content .tab .box {
 	100% { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ── Responsive nav ──────────────────────────────── */
+/* ── Hamburger button ────────────────────────────── */
 
-@media (max-width: 600px) {
+#nav-hamburger {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	color: var(--jet);
+	border-radius: 10px;
+	transition: background 150ms;
+	flex-shrink: 0;
+}
+
+#nav-hamburger:hover {
+	background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Nav backdrop ────────────────────────────────── */
+
+#nav-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 9998;
+	background: rgba(0, 0, 0, 0.28);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 220ms ease;
+}
+
+#nav-backdrop.active {
+	opacity: 1;
+	pointer-events: all;
+}
+
+/* ── Mobile nav ──────────────────────────────────── */
+
+@media (max-width: 768px) {
 	main nav {
-		padding: 0 14px;
+		padding: 0 16px;
 		height: 60px;
+		z-index: 9999;
 	}
 
-	main nav #logo img {
-		height: 28px;
+	main nav .logo img {
+		height: 32px;
 	}
 
-	main nav .nav-links a span {
-		display: none;
+	#nav-hamburger {
+		display: flex;
 	}
 
-	main nav .nav-links a {
-		padding: 8px 10px;
+	main nav .links {
+		display: flex;
+		flex-direction: column;
+		position: fixed;
+		top: 72px;
+		left: 12px;
+		right: 12px;
+		z-index: 9999;
+		background: var(--snow);
+		border-radius: 18px;
+		padding: 8px;
+		gap: 4px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+		opacity: 0;
+		transform: translateY(-10px) scale(0.97);
+		pointer-events: none;
+		transition: opacity 200ms ease, transform 200ms ease;
+		transform-origin: top center;
 	}
 
-	main nav .nav-links a.primary {
-		padding: 8px 12px;
+	main nav .links.open {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		pointer-events: all;
+	}
+
+	main nav .links a {
+		padding: 14px 16px;
+		border-radius: 12px;
+		font-size: 0.95rem;
+		font-weight: 500;
+		justify-content: flex-start;
+		gap: 12px;
+		color: var(--jet);
+	}
+
+	main nav .links a:hover {
+		background: var(--platinum);
+	}
+
+	main nav .links a.primary {
+		background: var(--jet);
+		color: var(--snow);
+		margin-top: 2px;
+	}
+
+	main nav .links a.primary:hover {
+		background: var(--jet);
+		opacity: 0.88;
 	}
 }

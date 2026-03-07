@@ -21,6 +21,7 @@
 	<script src="js/profile.js" defer></script>
 	<script src="js/overview.js" defer></script>
 	<script src="js/loading.js" defer></script>
+	<script src="js/mobile.js" defer></script>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 	<script src="resources/anime.iife.min.js"></script>
@@ -45,7 +46,14 @@
 					<span>Prozkoumat lokaci</span>
 				</a>
 			</div>
+
+			<button id="nav-hamburger" aria-label="Otevřít menu" aria-expanded="false">
+				<svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+				<svg id="close-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+			</button>
 		</nav>
+
+		<div id="nav-backdrop"></div>
 
 		<div id="content">
 			<div id="add" class="tab active">
@@ -226,6 +234,11 @@
 			<div id="overview" class="tab">
 				<div id="report-map"></div>
 				<div id="categories"></div>
+
+				<div id="overview-toggle">
+					<button class="ov-tab active" data-view="map">Mapa</button>
+					<button class="ov-tab" data-view="results">Výsledky</button>
+				</div>
 			</div>
 		</div>
 	</main>

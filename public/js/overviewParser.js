@@ -195,16 +195,23 @@ function parseReportData(input) {
 	// ====== PRÁCE ======
 	if (data.work) {
 		const w = data.work;
+		const jo = w.job_opportunities;
+
+		const joValue = jo?.company_count != null
+			? `${jo.company_count.toLocaleString('cs-CZ')} firem`
+			: fmt(dist(jo));
 
 		result.work = {
 			score: applyWeight(toScore(w.value), weights.work),
 			array: [
 				{ name: 'Průmyslová zóna', value: fmt(dist(w.industrial_zone)), entities: w.industrial_zone?.entities },
+				{ name: 'Pracovní příležitosti', value: joValue, entities: jo?.entities },
 			]
 		};
 
-		// Map: nearest 3
+		// Map: nearest 3 industrial + top 3 employers
 		filterE(w.industrial_zone?.entities, 3).forEach(e => e.lat && addCategoryMarker('work', e.lat, e.lon, '#f59e0b'));
+		filterE(jo?.entities, 3).forEach(e => e.lat && addCategoryMarker('work', e.lat, e.lon, '#f59e0b'));
 	}
 
 	// ====== QoL ======

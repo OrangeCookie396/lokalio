@@ -473,8 +473,18 @@ input[type="range"].category-slider:disabled::-webkit-slider-thumb {
 
 @media (max-width: 720px) {
 	.wizard-inner {
-		padding: 24px 24px;
+		padding: 24px 16px;
+		gap: 28px;
+	}
+
+	.wizard-header {
+		flex-direction: column;
 		gap: 20px;
+		align-items: stretch;
+	}
+
+	.step-indicator {
+		width: 100%;
 	}
 
 	.categories-grid {
@@ -520,5 +530,31 @@ input[type="range"].category-slider:disabled::-webkit-slider-thumb {
 	.wizard-actions button {
 		padding: 11px 18px;
 		font-size: 0.9rem;
+	}
+}
+
+/* ── Add tab mobile ──────────────────────────────── */
+
+@media (max-width: 768px) {
+	#add .wrap {
+		flex-direction: column;
+		align-items: stretch;
+		padding: 16px;
+		gap: 10px;
+	}
+
+	#add .wrap .box.info {
+		display: none;
+	}
+
+	#add .wrap #address-search {
+		flex: none;
+		width: 100%;
+	}
+
+	#add .wrap .box.button {
+		justify-content: center;
+		width: 100%;
+		box-sizing: border-box;
 	}
 }
