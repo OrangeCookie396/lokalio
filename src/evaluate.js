@@ -198,13 +198,26 @@ async function evalHealthcare(lat, lon) {
 		"data/healthcare/special_care/dentist.geojson"
 	);
 
-	const doctorAdult = findNearestPoints(doctorAdultData, lat, lon, maxT1, (f) => f.properties.provozovatel);
-	const doctorChild = findNearestPoints(doctorChildData, lat, lon, maxT1, (f) => f.properties.provozovatel);
-	const hospitals = findNearestPoints(hospitalsData, lat, lon, maxT2, (f) => f.properties.nazev);
-	const longTerm = findNearestPoints(longTermData, lat, lon, maxT2, (f) => f.properties.nazev);
-	const rehab = findNearestPoints(rehabData, lat, lon, maxT2, (f) => f.properties.druh_zarizeni || f.properties.nazev || "Rehabilitace");
-	const gyneco = findNearestPoints(gynecoData, lat, lon, maxT1, (f) => f.properties.provozovatel);
-	const dentist = findNearestPoints(dentistData, lat, lon, maxT1, (f) => f.properties.provozovatel);
+	// Address-based name for generic providers (doctors, dentists, gynecologists)
+	const addrName = (f) => {
+		const p = f.properties;
+		const addr = [p.nazev_ulice, p.cislo_domovni].filter(Boolean).join(" ");
+		return addr ? `${addr}, ${p.nazev_obce}` : p.nazev_obce || p.provozovatel;
+	};
+	// Hospital/facility name with city to distinguish branches
+	const facilityName = (f) => {
+		const p = f.properties;
+		const name = p.nazev || p.druh_zarizeni || "Zařízení";
+		return p.nazev_obce ? `${name} (${p.nazev_obce})` : name;
+	};
+
+	const doctorAdult = deduplicateEntities(findNearestPoints(doctorAdultData, lat, lon, maxT1, addrName), 50);
+	const doctorChild = deduplicateEntities(findNearestPoints(doctorChildData, lat, lon, maxT1, addrName), 50);
+	const hospitals = deduplicateEntities(findNearestPoints(hospitalsData, lat, lon, maxT2, facilityName), 500);
+	const longTerm = deduplicateEntities(findNearestPoints(longTermData, lat, lon, maxT2, facilityName), 500);
+	const rehab = deduplicateEntities(findNearestPoints(rehabData, lat, lon, maxT2, facilityName), 500);
+	const gyneco = deduplicateEntities(findNearestPoints(gynecoData, lat, lon, maxT1, addrName), 50);
+	const dentist = deduplicateEntities(findNearestPoints(dentistData, lat, lon, maxT1, addrName), 50);
 
 	const daScore = scoreNearest(doctorAdult, T.healthcare_t1);
 	const dcScore = scoreNearest(doctorChild, T.healthcare_t1);
@@ -273,7 +286,7 @@ async function evalRecreation(lat, lon) {
 
 	// Nature
 	const curiosity = findNearestPoints(await load("data/recreation/nature/nature_curiosity.geojson"), lat, lon, maxR3, (f) => f.properties.nazev);
-	const monuments = evalNatureMonuments(await load("data/recreation/nature/nature_monuments_and_buffer_zones.geojson"), lat, lon, maxR3);
+	const monuments = deduplicateEntities(evalNatureMonuments(await load("data/recreation/nature/nature_monuments_and_buffer_zones.geojson"), lat, lon, maxR3), 200, 2000);
 
 	const curiosityScore = scoreNearest(curiosity, T.recreation_t3);
 	const monumentsScore = scoreNearest(monuments, T.recreation_t3);
@@ -281,7 +294,7 @@ async function evalRecreation(lat, lon) {
 
 	// Wellness & lifestyle
 	const brewery = findNearestPoints(await load("data/recreation/wellness_and_lifestyle/beer_brewery.geojson"), lat, lon, maxR3, (f) => f.properties.nazev);
-	const spa = findNearestPoints(await load("data/recreation/wellness_and_lifestyle/spa.geojson"), lat, lon, maxR3, (f) => [f.properties.pozn, f.properties.poskytovatel].filter(Boolean).join(" – "));
+	const spa = deduplicateEntities(findNearestPoints(await load("data/recreation/wellness_and_lifestyle/spa.geojson"), lat, lon, maxR3, (f) => [f.properties.pozn, f.properties.poskytovatel].filter(Boolean).join(" – ")), 500);
 
 	const breweryScore = scoreNearest(brewery, T.recreation_t3);
 	const spaScore = scoreNearest(spa, T.recreation_t3);
@@ -369,7 +382,8 @@ const SCHOOL_FILTER = {
 	primary: (d) => d === "Základní škola",
 	high: (d) => d === "Střední škola" || d === "Vyšší odborná škola",
 	university: (d) =>
-		/fakulta|rektorát|univerzit|kated/i.test(d),
+		/fakulta|rektorát|univerzit|kated|zahrad.*fakult|centrum.*univerzit|objekt.*výuk/i.test(d) &&
+		!/kolej|knihovn/i.test(d),
 };
 
 async function evalEducation(lat, lon) {
@@ -393,9 +407,12 @@ async function evalEducation(lat, lon) {
 				filterFn(f.properties.zarizeni_druh || "")
 			),
 		};
-		schoolTypes[type] = findNearestPoints(
-			filtered, lat, lon, maxRange(T[type]),
-			(f) => f.properties.nazev
+		const nameFn = type === "university"
+			? (f) => `${f.properties.zarizeni_druh} – ${f.properties.nazev}`
+			: (f) => f.properties.nazev;
+		schoolTypes[type] = deduplicateEntities(
+			findNearestPoints(filtered, lat, lon, maxRange(T[type]), nameFn),
+			100
 		);
 	}
 
@@ -593,8 +610,8 @@ async function evalIZS(lat, lon) {
 	const firefighterData = await load("data/qol/izs/firefighter.geojson");
 	const policeData = await load("data/qol/izs/police.geojson");
 
-	const ambulance = findNearestPoints(ambulanceData, lat, lon, maxD, (f) => f.properties.vyjezdova_zakladna || f.properties.oblast || "Ambulance");
-	const firefighter = findNearestPoints(firefighterData, lat, lon, maxD, (f) => f.properties.druh_pracoviste || "Hasiči");
+	const ambulance = deduplicateEntities(findNearestPoints(ambulanceData, lat, lon, maxD, (f) => f.properties.vyjezdova_zakladna || f.properties.oblast || "Ambulance"), 100);
+	const firefighter = deduplicateEntities(findNearestPoints(firefighterData, lat, lon, maxD, (f) => f.properties.druh_pracoviste || "Hasiči"), 100);
 	const police = findNearestPoints(policeData, lat, lon, maxD, (f) => f.properties.nazev_obvodu || "Policie");
 
 	const ambScore = scoreNearest(ambulance, T.izs);
@@ -634,8 +651,8 @@ async function evalNoise(lat, lon) {
 		: 5;
 
 	// Emergency services noise
-	const ambNoise = findNearestPoints(ambulanceData, lat, lon, maxDefault, (f) => f.properties.vyjezdova_zakladna || "Ambulance");
-	const fireNoise = findNearestPoints(firefighterData, lat, lon, maxDefault, (f) => f.properties.druh_pracoviste || "Hasiči");
+	const ambNoise = deduplicateEntities(findNearestPoints(ambulanceData, lat, lon, maxDefault, (f) => f.properties.vyjezdova_zakladna || "Ambulance"), 100);
+	const fireNoise = deduplicateEntities(findNearestPoints(firefighterData, lat, lon, maxDefault, (f) => f.properties.druh_pracoviste || "Hasiči"), 100);
 	const polNoise = findNearestPoints(policeData, lat, lon, maxDefault, (f) => f.properties.nazev_obvodu || "Policie");
 	const maxIndustrial = maxRange(T.noise_industrial);
 	const indNoise = findNearestPoints(industrialData, lat, lon, maxIndustrial, (f) => f.properties.nazev);
