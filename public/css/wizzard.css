@@ -11,13 +11,12 @@
 
 #add .wrap {
 	display: flex;
-	gap: 16px;
+	gap: 12px;
 	align-items: center;
 	width: 100%;
 	padding: 20px 32px;
 	box-sizing: border-box;
-	background-color: var(--snow);
-	border-top: 1px solid rgba(var(--silver-rgb), 0.2);
+	background-color: var(--platinum);
 	flex-shrink: 0;
 }
 
@@ -31,6 +30,85 @@
 	border-radius: 0;
 }
 
+#add .wrap #address-search {
+	position: relative;
+	flex: 1;
+}
+
+#add .wrap #address-search #address-search-inner {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--snow);
+	border-radius: 100px;
+	padding: 12px 24px;
+	color: var(--slate, #666);
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+#add .wrap #address-search #address-search-inner #address-input {
+	flex: 1;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-size: 0.95rem;
+	color: inherit;
+	font-family: inherit;
+	min-width: 0;
+}
+
+#add .wrap #address-search #address-search-inner #address-input::placeholder {
+	color: #aaa;
+}
+
+#add .wrap #address-search #address-suggestions {
+	list-style: none;
+	margin: 0 0 6px;
+	padding: 0;
+	background: var(--snow, #fff);
+	border-radius: 10px;
+	overflow: hidden;
+	max-height: 260px;
+	overflow-y: auto;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+#add .wrap #address-search #address-search-inner#address-suggestions:empty {
+	display: none;
+}
+
+#add .wrap #address-search #address-suggestions li {
+	padding: 10px 14px;
+	font-size: 0.88rem;
+	cursor: pointer;
+	border-top: 1px solid rgba(0,0,0,0.06);
+	line-height: 1.4;
+	color: var(--jet, #222);
+}
+
+#add .wrap #address-search #address-search-inner#address-suggestions li:first-child {
+	border-top: none;
+}
+
+#add .wrap #address-search #address-suggestions li:hover,
+#add .wrap #address-search #address-suggestions li.active {
+	background: rgba(59,130,246,0.08);
+}
+
+#add .wrap #address-search #address-suggestions li .sug-main {
+	font-weight: 500;
+}
+
+#add .wrap #address-search #address-suggestions li .sug-sub {
+	color: #888;
+	font-size: 0.82rem;
+}
+
 #add .wrap .box.button {
 	display: flex;
 	flex-direction: row;
@@ -39,7 +117,7 @@
 	background-color: var(--teal);
 	color: var(--snow);
 	cursor: pointer;
-	padding: 14px 28px;
+	padding: 12px 24px;
 	border-radius: 100px;
 	font-size: 1rem;
 	font-weight: 500;
@@ -68,7 +146,7 @@
 .wizard-inner {
 	display: flex;
 	flex-direction: column;
-	gap: 28px;
+	gap: 60px;
 	padding: 36px 48px;
 	box-sizing: border-box;
 	width: 100%;
@@ -78,12 +156,15 @@
 
 .wizard-header {
 	display: flex;
-	flex-direction: column;
-	gap: 28px;
+	align-items: start;
+	gap: 60px;
 }
 
 .wizard-title {
-	text-align: center;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
 }
 
 .wizard-title h2 {
@@ -102,7 +183,7 @@
 .step-indicator {
 	display: flex;
 	align-items: flex-start;
-	width: 100%;
+	width: 500px;
 }
 
 .step-item {
@@ -156,7 +237,7 @@
 }
 
 .step-indicator .step-line {
-	flex: 0 0 80px;
+	flex: 0 0 60px;
 	height: 3px;
 	border-radius: 2px;
 	background-color: rgba(var(--silver-rgb), 0.35);

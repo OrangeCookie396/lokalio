@@ -50,7 +50,7 @@ nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 48px;
+	padding: 20px 24px;
 	transition: background-color 400ms ease, backdrop-filter 400ms ease, box-shadow 400ms ease;
 	background-color: var(--snow);
 }

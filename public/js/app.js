@@ -1,4 +1,4 @@
-const USE_DUMMY_DATA = false;
+const USE_DUMMY_DATA = new URLSearchParams(location.search).has('dev');
 
 async function searchAddress() {
 	console.log("searchAddress triggered");
