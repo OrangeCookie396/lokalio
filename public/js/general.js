@@ -35,7 +35,6 @@ function createMarker(map, lat, lon, color = '#007bff', size = 36) {
 	});
 
 	const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
-	map.setView([lat, lon], map.getZoom());
 
 	return marker;
 }
