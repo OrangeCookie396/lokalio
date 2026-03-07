@@ -84,8 +84,11 @@ function generateReport(data) {
 	const container = document.getElementById('categories');
 	container.innerHTML = '';
 
-	const scores = Object.values(parsed).map(c => c.score).filter(Boolean);
-	const total = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+	const weights = getInterestWeights();
+	const catEntries = Object.entries(parsed).filter(([, c]) => c.rawScore != null);
+	const weightedSum = catEntries.reduce((s, [k, c]) => s + c.rawScore * (weights[k] || 1), 0);
+	const totalWeight = catEntries.reduce((s, [k]) => s + (weights[k] || 1), 0);
+	const total = totalWeight > 0 ? Math.round(weightedSum / totalWeight * 20) : 0;
 
 	const rings = [];
 
@@ -199,7 +202,7 @@ function generateReport(data) {
 		const miniLabel = document.createElement('div');
 		miniLabel.className = 'ring-score-label';
 		miniLabel.style.color = meta.color;
-		miniLabel.textContent = cat.score;
+		miniLabel.textContent = cat.rawScore ?? cat.score;
 		miniWrap.appendChild(miniLabel);
 		top.appendChild(miniWrap);
 
@@ -341,7 +344,7 @@ function showDetail(cat, meta, key = null) {
 	dRing.appendChild(dSvg);
 	const dLabel = document.createElement('div');
 	dLabel.className = 'ring-label';
-	dLabel.textContent = cat.score;
+	dLabel.textContent = cat.rawScore ?? cat.score;
 	dRing.appendChild(dLabel);
 	scoreCard.appendChild(dRing);
 
@@ -352,7 +355,7 @@ function showDetail(cat, meta, key = null) {
 	detailVerdict.textContent = getScoreText(cat.score);
 	const detailSub = document.createElement('div');
 	detailSub.className = 'detail-sublabel';
-	detailSub.textContent = `${cat.score} / 100 bodů`;
+	detailSub.textContent = `${cat.rawScore ?? cat.score} / 5 bodů`;
 	infoDiv.appendChild(detailVerdict);
 	infoDiv.appendChild(detailSub);
 	scoreCard.appendChild(infoDiv);

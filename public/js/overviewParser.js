@@ -75,7 +75,6 @@ window.highlightCategoryMarkers = function(key) {
 };
 
 function parseReportData(input) {
-	const weights = getInterestWeights();
 	const data = input.openData?.data || input.data || input;
 	const result = {};
 
@@ -88,7 +87,7 @@ function parseReportData(input) {
 		const nearestTrain = trainEntities[0]?.distance_m ?? null;
 
 		result.transportation = {
-			score: applyWeight(toScore(t.value), weights.transportation),
+			score: toScore(t.value), rawScore: +(t?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Autobusové zastávky', value: fmt(nearestBus), entities: busEntities },
 				{ name: 'Vlakové nádraží', value: fmt(nearestTrain), entities: trainEntities },
@@ -106,7 +105,7 @@ function parseReportData(input) {
 		const sp = h.special_care || {};
 
 		result.medicalcare = {
-			score: applyWeight(toScore(h.value), weights.medicalcare),
+			score: toScore(h.value), rawScore: +(h?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Praktický lékař', value: fmt(dist(h.doctor_adult)), entities: h.doctor_adult?.entities },
 				{ name: 'Dětský lékař', value: fmt(dist(h.doctor_child)), entities: h.doctor_child?.entities },
@@ -143,7 +142,7 @@ function parseReportData(input) {
 			.sort((a, b) => (a.distance_m ?? 0) - (b.distance_m ?? 0));
 
 		result.recreation = {
-			score: applyWeight(toScore(r.value), weights.recreation),
+			score: toScore(r.value), rawScore: +(r?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Kulturní centrum', value: fmt(dist(ca.culture_centre)), entities: ca.culture_centre?.entities },
 				{ name: 'Knihovna', value: fmt(dist(ca.library)), entities: ca.library?.entities },
@@ -178,7 +177,7 @@ function parseReportData(input) {
 		const s = e.school || {};
 
 		result.education = {
-			score: applyWeight(toScore(e.value), weights.education),
+			score: toScore(e.value), rawScore: +(e?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Mateřská škola', value: fmt(dist(s.kindergarten)), entities: s.kindergarten?.entities },
 				{ name: 'Základní škola', value: fmt(dist(s.primary)), entities: s.primary?.entities },
@@ -205,7 +204,7 @@ function parseReportData(input) {
 			: fmt(dist(jo));
 
 		result.work = {
-			score: applyWeight(toScore(w.value), weights.work),
+			score: toScore(w.value), rawScore: +(w?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Průmyslová zóna', value: fmt(dist(w.industrial_zone)), entities: w.industrial_zone?.entities },
 				{ name: 'Pracovní příležitosti', value: joValue, entities: jo?.entities },
@@ -251,7 +250,7 @@ function parseReportData(input) {
 		const roadQualityLabel = roadQualityScore != null ? getScoreText(roadQualityScore) : 'N/A';
 
 		result.qol = {
-			score: applyWeight(toScore(q.value), weights.qol),
+			score: toScore(q.value), rawScore: +(q?.value || 0).toFixed(1),
 			array: [
 				{ name: 'Benzo[a]pyren (ng/m³)', value: air.benzopyren?.measured != null ? air.benzopyren.measured.toFixed(2) : 'N/A', entities: filterE(air.benzopyren?.entities, 3) },
 				{ name: 'Prach PM10 (μg/m³)', value: air.dust?.measured != null ? air.dust.measured.toFixed(2) : 'N/A', entities: filterE(air.dust?.entities, 3) },
