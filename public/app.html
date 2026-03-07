@@ -48,13 +48,12 @@
 		</nav>
 
 		<div id="content">
-			<!-- Step 1: Location -->
 			<div id="add" class="tab active">
 				<div id="add-map"></div>
 
 				<div class="wrap">
 					<div class="box info">
-						<p>Klikněte na požadované místo na mapě, které chcete analyzovat</p>
+						<p>Klikněte na požadované místo na mapě, které chcete analyzovat nebo zadejte adresu.</p>
 					</div>
 
 					<div id="address-search">
@@ -69,11 +68,19 @@
 				</div>
 			</div>
 
-			<!-- Step 2: Profile -->
 			<div id="profile" class="tab">
 				<div class="wizard-inner">
-
 					<div class="wizard-header">
+						<div class="wizard-title">
+							<h2>Vyberte profil</h2>
+							<p>Zvolte přednastavený profil nebo si nastavte vlastní váhy kategorií</p>
+
+							<div class="location-chip" id="location-chip">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/></svg>
+								<span id="location-text">—</span>
+							</div>
+						</div>
+
 						<div class="step-indicator">
 							<div class="step-item done">
 								<span class="step">1</span>
@@ -87,22 +94,13 @@
 							<span class="step-line"></span>
 							<div class="step-item">
 								<span class="step">3</span>
-								<span class="step-label">Zpracování dat</span>
+								<span class="step-label">Analýza</span>
 							</div>
 							<span class="step-line"></span>
 							<div class="step-item">
 								<span class="step">4</span>
 								<span class="step-label">Výsledek</span>
 							</div>
-						</div>
-						<div class="wizard-title">
-							<h2>Vyberte profil</h2>
-							<p>Zvolte přednastavený profil nebo si nastavte vlastní váhy kategorií</p>
-						</div>
-
-						<div class="location-chip" id="location-chip">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/></svg>
-							<span id="location-text">—</span>
 						</div>
 					</div>
 
@@ -225,7 +223,6 @@
 				</div>
 			</div>
 
-			<!-- Step 3: Overview -->
 			<div id="overview" class="tab">
 				<div id="report-map"></div>
 				<div id="categories"></div>
@@ -257,6 +254,15 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+	</script>
+	<script>
+		if (new URLSearchParams(location.search).has('dev')) {
+			window.addEventListener('load', () => {
+				window.inputCoordinates = [50.209, 15.832];
+				window.selectedProfile = 'individual';
+				searchAddress();
+			});
+		}
 	</script>
 </body>
 </html>

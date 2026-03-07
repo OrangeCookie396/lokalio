@@ -1,11 +1,11 @@
-window.reportMap = L.map('report-map', { keyboard: false }).setView([50.209, 15.832], 14);
+window.reportMap = L.map('report-map', { keyboard: false, zoomControl: false }).setView([50.209, 15.832], 14);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
 	maxZoom: 19
 }).addTo(window.reportMap);
 
-window.addMap = L.map('add-map', { keyboard: false }).setView([50.209, 15.832], 14);
+window.addMap = L.map('add-map', { keyboard: false, zoomControl: false }).setView([50.209, 15.832], 14);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',

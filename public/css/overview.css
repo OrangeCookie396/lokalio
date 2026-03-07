@@ -24,6 +24,7 @@ main #report-map {
 	gap: 12px;
 	box-sizing: border-box;
 	position: relative;
+	padding-top: 80px;
 }
 
 /* ── Hero ────────────────────────────────────────── */
@@ -31,12 +32,19 @@ main #report-map {
 .report-hero {
 	background: linear-gradient(135deg, var(--jet) 0%, var(--teal) 100%);
 	border-radius: 16px;
-	padding: 16px 20px;
+	padding: 16px 20px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	color: var(--snow);
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.hero-top {
 	display: flex;
 	align-items: center;
 	gap: 16px;
-	color: var(--snow);
-	flex-shrink: 0;
 }
 
 .hero-ring {
@@ -219,7 +227,7 @@ main #report-map {
 	position: absolute;
 	inset: 0;
 	background: var(--platinum);
-	padding: 24px;
+	padding: 80px 24px 24px;
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
@@ -494,8 +502,46 @@ main #report-map {
 	padding: 0 16px;
 }
 
-.summary-accordion.open .summary-dropdown-body {
-	padding: 12px 16px;
+.summary-dropdown-body::before,
+.summary-dropdown-body::after {
+	content: '';
+	display: block;
+	height: 12px;
+}
+
+/* ── Hero summary (inside gradient box) ─────────── */
+
+.hero-summary {
+	border: none;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 0;
+	margin: 0 -20px;
+}
+
+.hero-summary .summary-banner {
+	background: rgba(255, 255, 255, 0.1);
+	color: var(--snow);
+	font-size: 0.78rem;
+	padding: 10px 20px;
+	border-radius: 0;
+}
+
+.hero-summary .summary-banner:hover {
+	background: rgba(255, 255, 255, 0.18);
+}
+
+.hero-summary .summary-dropdown-body {
+	background: var(--snow);
+	color: var(--slate);
+	font-size: 0.82rem;
+	padding: 0 20px;
+}
+
+.hero-summary .summary-dropdown-body::before,
+.hero-summary .summary-dropdown-body::after {
+	content: '';
+	display: block;
+	height: 12px;
 }
 
 .hidden {
@@ -506,12 +552,12 @@ main #report-map {
 
 #cat-pills-overlay {
 	position: absolute;
-	top: 80px;
-	left: 10px;
+	bottom: 30px;
+	right: 10px;
 	z-index: 900;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
+	align-items: flex-end;
 	gap: 6px;
 	pointer-events: none;
 }
@@ -548,10 +594,10 @@ main #report-map {
 }
 
 .cat-pill:hover {
-	transform: translateX(3px);
+	transform: translateX(-3px);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 .cat-pill:active {
-	transform: translateX(1px);
+	transform: translateX(-1px);
 }
