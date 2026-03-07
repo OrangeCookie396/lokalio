@@ -728,7 +728,7 @@ main #report-map {
 	}
 
 	#cat-pills-overlay {
-		bottom: 88px;
+		bottom: auto;
 		right: 10px;
 	}
 
