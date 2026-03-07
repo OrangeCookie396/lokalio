@@ -93,20 +93,24 @@
 	}
 
 	async function fetchSuggestions(q) {
-		// viewbox: minLon,maxLat,maxLon,minLat — bounded=1 restricts to region
-		const viewbox = `${REGION_BOUNDS.getWest()},${REGION_BOUNDS.getNorth()},${REGION_BOUNDS.getEast()},${REGION_BOUNDS.getSouth()}`;
-		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=8&accept-language=cs&countrycodes=cz&addressdetails=1&viewbox=${viewbox}&bounded=1`;
-		const res = await fetch(url, { headers: { 'Accept-Language': 'cs' } });
-		const results = await res.json();
-		return results.filter(item => isInRegion(parseFloat(item.lat), parseFloat(item.lon)));
+		// Photon (Komoot) — optimalizovaný pro autocomplete, bbox = minLon,minLat,maxLon,maxLat
+		const bbox = `${REGION_BOUNDS.getWest()},${REGION_BOUNDS.getSouth()},${REGION_BOUNDS.getEast()},${REGION_BOUNDS.getNorth()}`;
+		const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&bbox=${bbox}`;
+		const res = await fetch(url);
+		const data = await res.json();
+		return (data.features || []).filter(f => {
+			const [lon, lat] = f.geometry.coordinates;
+			return isInRegion(lat, lon);
+		});
 	}
 
-	function buildLabel(item) {
-		const a = item.address || {};
-		const main = [a.road, a.house_number].filter(Boolean).join(' ')
-			|| a.amenity || a.building || item.name || '';
-		const sub = [a.city || a.town || a.village || a.municipality, a.county].filter(Boolean).join(', ');
-		return { main: main || item.display_name, sub };
+	function buildLabel(f) {
+		const p = f.properties || {};
+		const street = [p.street, p.housenumber].filter(Boolean).join(' ');
+		const main = p.name && p.name !== p.street ? p.name : (street || p.city || p.town || p.village || '');
+		const cityPart = p.city || p.town || p.village || p.municipality || '';
+		const sub = [street && street !== main ? street : null, cityPart, p.county].filter(Boolean).join(', ');
+		return { main: main || p.name || '', sub };
 	}
 
 	input.addEventListener('input', () => {
@@ -118,15 +122,17 @@
 			try {
 				const results = await fetchSuggestions(q);
 				clearSuggestions();
-				results.forEach((item, i) => {
-					const { main, sub } = buildLabel(item);
+				results.forEach(f => {
+					const { main, sub } = buildLabel(f);
+					if (!main) return;
+					const [lon, lat] = f.geometry.coordinates;
 					const li = document.createElement('li');
 					li.innerHTML = `<div class="sug-main">${main}</div>${sub ? `<div class="sug-sub">${sub}</div>` : ''}`;
-					li.addEventListener('mousedown', (e) => {
+					li.addEventListener('mousedown', e => {
 						e.preventDefault();
 						input.value = main;
 						clearSuggestions();
-						placePin(parseFloat(item.lat), parseFloat(item.lon), [main, sub].filter(Boolean).join(', '));
+						placePin(lat, lon, [main, sub].filter(Boolean).join(', '));
 					});
 					suggestions.appendChild(li);
 				});
