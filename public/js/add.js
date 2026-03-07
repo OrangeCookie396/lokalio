@@ -175,10 +175,12 @@
 
 		try {
 			const res = await fetch(`/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+			if (!res.ok) throw new Error(res.status);
 			const data = await res.json();
 			const a = data.address || {};
 			const parts = [a.road, a.house_number, a.city || a.town || a.village || a.municipality].filter(Boolean);
 			const label = parts.length ? parts.join(' ') : data.display_name;
+			if (!label) throw new Error('no label');
 			if (chip) chip.textContent = label;
 			input.value = label;
 		} catch {

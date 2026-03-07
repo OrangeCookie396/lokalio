@@ -14,9 +14,16 @@ app.get("/reverse", async (req, res) => {
 	try {
 		const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=cs`;
 		const r = await fetch(url, { headers: { "User-Agent": "lokalio/1.0" } });
+		if (!r.ok) {
+			return res.status(r.status).json({ error: `Nominatim returned ${r.status}` });
+		}
 		const data = await r.json();
+		if (data.error) {
+			return res.status(404).json({ error: data.error });
+		}
 		res.json(data);
 	} catch (e) {
+		console.error("Reverse geocoding error:", e.message);
 		res.status(500).json({ error: "Reverse geocoding failed" });
 	}
 });

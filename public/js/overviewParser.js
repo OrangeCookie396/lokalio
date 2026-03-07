@@ -113,7 +113,7 @@ function parseReportData(input) {
 				{ name: 'Zubař', value: fmt(dist(sp.dentist)), entities: sp.dentist?.entities },
 				{ name: 'Gynekolog', value: fmt(dist(sp.outpatient_gynecologist)), entities: sp.outpatient_gynecologist?.entities },
 				{ name: 'Rehabilitace', value: fmt(dist(sp.rehabilitation_centre)), entities: sp.rehabilitation_centre?.entities },
-				{ name: 'Lůžková péče', value: fmt(dist(sp.long_term_impatient_care)), entities: sp.long_term_impatient_care?.entities },
+				{ name: 'Lůžková péče', value: fmt(dist(sp.long_term_inpatient_care)), entities: sp.long_term_inpatient_care?.entities },
 			]
 		};
 
