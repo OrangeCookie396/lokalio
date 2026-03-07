@@ -733,4 +733,12 @@ main #report-map {
 		right: 10px;
 	}
 
+	.cat-detail {
+		padding: 24px;
+	}
+
+	.cat-card .cat-stats {
+		display: none;
+	}
+
 }
