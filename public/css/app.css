@@ -148,7 +148,7 @@ main #content .tab .box {
 
 #loading #background .ball:nth-child(2n) { background-color: var(--teal); }
 #loading #background .ball:nth-child(2n - 1) { background-color: var(--teal); }
-#loading #background .ball:nth-child(6) { background-color: var(--platinum); }
+#loading #background .ball:nth-child(6) { background-color: rgba(var(--platinum-rgb), 0.5); }
 
 #loading #background #blur {
 	width: 100%;
