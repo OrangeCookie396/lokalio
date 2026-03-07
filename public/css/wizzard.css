@@ -473,8 +473,16 @@ input[type="range"].category-slider:disabled::-webkit-slider-thumb {
 
 @media (max-width: 720px) {
 	.wizard-inner {
-		padding: 24px 16px;
+		padding: 24px 16px 0;
 		gap: 28px;
+	}
+
+	.wizard-actions {
+		position: sticky;
+		bottom: 0;
+		background: var(--platinum);
+		padding: 16px 0 24px;
+		margin-top: auto;
 	}
 
 	.wizard-header {
