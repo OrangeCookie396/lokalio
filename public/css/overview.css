@@ -741,4 +741,8 @@ main #report-map {
 		display: none;
 	}
 
+	.hero-location {
+		white-space: wrap;
+	}
+
 }
