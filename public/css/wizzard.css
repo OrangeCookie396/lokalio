@@ -539,6 +539,8 @@ input[type="range"].category-slider:disabled::-webkit-slider-thumb {
 	#add .wrap {
 		padding: 12px 16px;
 		gap: 10px;
+		position: relative;
+		z-index: 2;
 	}
 
 	#add .wrap .box.info {
