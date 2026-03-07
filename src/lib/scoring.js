@@ -31,6 +31,7 @@ export const T = {
 
 	// --- QoL: Noise (inverted: closer = worse) ---
 	noise_airport: [[2000, 0], [5000, 1], [8000, 2], [15000, 3], [30000, 4]],
+	noise_industrial: [[500, 0], [1000, 1], [2000, 2], [3000, 3], [5000, 4]],
 	noise_default: [[300, 0], [600, 1], [1000, 2], [1500, 3], [2000, 4]],
 
 	// --- QoL: Air quality (by measured value) ---
@@ -38,10 +39,10 @@ export const T = {
 	dust: [[4, 5], [7, 4], [11, 3], [16, 2], [25, 1]],
 	oxide: [[5, 5], [10, 4], [18, 3], [28, 2], [40, 1]],
 
-	// --- QoL: Flood (distance from boundary in meters) ---
-	flood_5year: [[3000, 1], [6000, 2], [10000, 3], [15000, 4]],
-	flood_20year: [[5000, 1], [12000, 2], [20000, 3], [30000, 4]],
-	flood_100year: [[8000, 1], [15000, 2], [30000, 3], [50000, 4]],
+	// --- QoL: Flood (distance from boundary in meters, 0=inside) ---
+	flood_5year: [[3, 1], [6, 2], [10, 3], [15, 4]],
+	flood_20year: [[5, 1], [12, 2], [20, 3], [30, 4]],
+	flood_100year: [[8, 1], [15, 2], [30, 3], [50, 4]],
 };
 
 export function score(value, thresholds, defaultScore = 0) {

@@ -47,6 +47,32 @@ function getPointLatLon(feature) {
 // ---------------------------------------------------------------------------
 const MAX_ENTITIES = 15;
 
+// Deduplicate nearby entities (e.g. bus stops on both sides of a road,
+// or multiple platforms at a bus station). Averages positions within a cluster.
+function deduplicateEntities(entities, radiusM = 100, nameRadius = 0) {
+	const clusters = [];
+	for (const e of entities) {
+		const cluster = clusters.find((c) => {
+			const dist = haversine(c.lat, c.lon, e.lat, e.lon);
+			if (dist <= radiusM) return true;
+			if (nameRadius > 0 && dist <= nameRadius && c.name === e.name) return true;
+			return false;
+		});
+		if (cluster) {
+			cluster.count++;
+			cluster.lat = cluster.latSum / cluster.count;
+			cluster.lon = cluster.lonSum / cluster.count;
+			cluster.latSum += e.lat;
+			cluster.lonSum += e.lon;
+			cluster.lat = cluster.latSum / cluster.count;
+			cluster.lon = cluster.lonSum / cluster.count;
+		} else {
+			clusters.push({ ...e, latSum: e.lat, lonSum: e.lon, count: 1 });
+		}
+	}
+	return clusters.map(({ latSum, lonSum, count, ...rest }) => rest);
+}
+
 function findNearestPoints(geojson, userLat, userLon, maxDist, nameFn) {
 	const entities = [];
 	for (const f of geojson.features) {
@@ -127,17 +153,19 @@ async function evalTransport(lat, lon) {
 		"data/public_transport/train_station.geojson"
 	);
 
-	const busEntities = findNearestPoints(
+	const busEntitiesRaw = findNearestPoints(
 		busStopData, lat, lon, maxRange(T.bus_stop),
 		(f) => f.properties.nazev
 	);
+	const busEntities = deduplicateEntities(busEntitiesRaw, 100, 200);
 	// top 3 average, minimum score 1 if at least 1 exists
 	const busScore = scoreNearest(busEntities, T.bus_stop, 3, 1);
 
-	const trainEntities = findNearestPoints(
+	const trainEntitiesRaw = findNearestPoints(
 		trainStationData, lat, lon, maxRange(T.train_stop),
 		(f) => f.properties.nazev
 	);
+	const trainEntities = deduplicateEntities(trainEntitiesRaw, 200);
 	const trainScore = scoreNearest(trainEntities, T.train_stop, 1);
 
 	return {
@@ -253,7 +281,7 @@ async function evalRecreation(lat, lon) {
 
 	// Wellness & lifestyle
 	const brewery = findNearestPoints(await load("data/recreation/wellness_and_lifestyle/beer_brewery.geojson"), lat, lon, maxR3, (f) => f.properties.nazev);
-	const spa = findNearestPoints(await load("data/recreation/wellness_and_lifestyle/spa.geojson"), lat, lon, maxR3, (f) => f.properties.nazev);
+	const spa = findNearestPoints(await load("data/recreation/wellness_and_lifestyle/spa.geojson"), lat, lon, maxR3, (f) => [f.properties.pozn, f.properties.poskytovatel].filter(Boolean).join(" – "));
 
 	const breweryScore = scoreNearest(brewery, T.recreation_t3);
 	const spaScore = scoreNearest(spa, T.recreation_t3);
@@ -472,9 +500,9 @@ async function evalAirQuality(lat, lon) {
 
 	return {
 		value: avgScores([benzScore, dustScore, oxideScore]),
-		benzopyren: leaf(benzScore, benzEntities),
-		dust: leaf(dustScore, dustEntities),
-		oxide: leaf(oxideScore, oxideEntities),
+		benzopyren: { ...leaf(benzScore, benzEntities), measured: benzValue != null ? Math.round(benzValue * 1000) / 1000 : null },
+		dust: { ...leaf(dustScore, dustEntities), measured: dustValue != null ? Math.round(dustValue * 100) / 100 : null },
+		oxide: { ...leaf(oxideScore, oxideEntities), measured: oxideValue != null ? Math.round(oxideValue * 100) / 100 : null },
 	};
 }
 
@@ -548,7 +576,6 @@ async function evalFloodZone(path, lat, lon, thresholds, isSjtsk) {
 	if (isInside) {
 		value = 0;
 	} else {
-		// Distance in meters (S-JTSK euclidean is already meters, haversine also meters)
 		value = score(minDist, thresholds, 5);
 	}
 
@@ -610,12 +637,13 @@ async function evalNoise(lat, lon) {
 	const ambNoise = findNearestPoints(ambulanceData, lat, lon, maxDefault, (f) => f.properties.vyjezdova_zakladna || "Ambulance");
 	const fireNoise = findNearestPoints(firefighterData, lat, lon, maxDefault, (f) => f.properties.druh_pracoviste || "Hasiči");
 	const polNoise = findNearestPoints(policeData, lat, lon, maxDefault, (f) => f.properties.nazev_obvodu || "Policie");
-	const indNoise = findNearestPoints(industrialData, lat, lon, maxDefault, (f) => f.properties.nazev);
+	const maxIndustrial = maxRange(T.noise_industrial);
+	const indNoise = findNearestPoints(industrialData, lat, lon, maxIndustrial, (f) => f.properties.nazev);
 
 	const ambNoiseScore = ambNoise.length > 0 ? score(ambNoise[0].distance_m, T.noise_default, 5) : 5;
 	const fireNoiseScore = fireNoise.length > 0 ? score(fireNoise[0].distance_m, T.noise_default, 5) : 5;
 	const polNoiseScore = polNoise.length > 0 ? score(polNoise[0].distance_m, T.noise_default, 5) : 5;
-	const indNoiseScore = indNoise.length > 0 ? score(indNoise[0].distance_m, T.noise_default, 5) : 5;
+	const indNoiseScore = indNoise.length > 0 ? score(indNoise[0].distance_m, T.noise_industrial, 5) : 5;
 
 	return {
 		value: avgScores([airportScore, trainScore, ambNoiseScore, fireNoiseScore, polNoiseScore, indNoiseScore]),
@@ -698,7 +726,7 @@ export async function evaluate(lat, lon) {
 	};
 
 	// AI summary runs after scoring is done (non-blocking for the scores)
-	result.summary = await generateSummary(result);
+	//result.summary = await generateSummary(result);
 
 	return result;
 }
