@@ -11,6 +11,7 @@
 # Data files
 data/
 ideas/
+docs/
 
 # Dependency directories
 node_modules/
