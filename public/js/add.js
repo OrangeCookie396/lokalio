@@ -5,11 +5,9 @@
 		L.latLng(50.78, 16.64)
 	);
 
-	window.addMap.setMaxBounds(REGION_BOUNDS.pad(0.05));
 	window.addMap.fitBounds(REGION_BOUNDS);
-	window.addMap.setMinZoom(9);
 
-	// Point-in-ring test (GeoJSON coords are [lon, lat])
+	// Ray-casting point-in-polygon (GeoJSON ring je [lon, lat])
 	function pointInRing(lat, lon, ring) {
 		let inside = false;
 		for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -20,64 +18,31 @@
 		return inside;
 	}
 
-	function pointInGeoJSON(lat, lon, geojson) {
-		if (geojson.type === 'Polygon') {
-			return pointInRing(lat, lon, geojson.coordinates[0]);
-		} else if (geojson.type === 'MultiPolygon') {
-			return geojson.coordinates.some(poly => pointInRing(lat, lon, poly[0]));
-		}
-		return false;
-	}
-
-	let regionGeoJSON = null;
+	let KHK_RING = null;
 
 	function isInRegion(lat, lon) {
-		if (regionGeoJSON) return pointInGeoJSON(lat, lon, regionGeoJSON);
-		return REGION_BOUNDS.contains(L.latLng(lat, lon)); // fallback until loaded
+		if (KHK_RING) return pointInRing(lat, lon, KHK_RING);
+		return REGION_BOUNDS.contains(L.latLng(lat, lon)); // fallback dokud se polygon načítá
 	}
 
-	// Fetch real region boundary, apply dark mask and store for click validation
-	(async () => {
-		try {
-			const res = await fetch('https://nominatim.openstreetmap.org/search?' + new URLSearchParams({
-				q: 'Královéhradecký kraj',
-				format: 'json',
-				polygon_geojson: '1',
-				limit: '1',
-				countrycodes: 'cz',
-			}), { headers: { 'Accept-Language': 'cs' } });
-			const data = await res.json();
-			const geojson = data[0]?.geojson;
-			if (!geojson) return;
+	const world = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
 
-			regionGeoJSON = geojson;
+	fetch('/resources/khk_boundary.geojson')
+		.then(r => r.json())
+		.then(geojson => {
+			KHK_RING = geojson.geometry.coordinates[0];
+			const maskGeometry = { type: 'Polygon', coordinates: [world, KHK_RING] };
+			const regionGeometry = { type: 'Polygon', coordinates: [KHK_RING] };
 
-			// World outer ring (GeoJSON is [lon, lat])
-			const world = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
-
-			let holes;
-			if (geojson.type === 'Polygon') {
-				holes = [geojson.coordinates[0]];
-			} else if (geojson.type === 'MultiPolygon') {
-				holes = geojson.coordinates.map(p => p[0]);
-			} else return;
-
-			// Dark overlay on everything outside the region
-			L.geoJSON({
-				type: 'Feature',
-				geometry: { type: 'Polygon', coordinates: [world, ...holes] }
-			}, {
-				interactive: false,
-				style: { fillColor: '#000', fillOpacity: 0.1, color: 'transparent', weight: 0 }
-			}).addTo(window.addMap);
-
-			// Region border
-			L.geoJSON({ type: 'Feature', geometry: geojson }, {
-				interactive: false,
-				style: { fill: false, color: '#1F7A8C', weight: 2, opacity: 0.7 }
-			}).addTo(window.addMap);
-		} catch {}
-	})();
+			[window.addMap, window.reportMap].forEach(m => {
+				L.geoJSON({ type: 'Feature', geometry: maskGeometry }, {
+					interactive: false, style: { fillColor: '#000', fillOpacity: 0.08, color: 'transparent', weight: 0 }
+				}).addTo(m);
+				L.geoJSON({ type: 'Feature', geometry: regionGeometry }, {
+					interactive: false, style: { fill: false, color: '#1F7A8C', weight: 2, opacity: 0.7 }
+				}).addTo(m);
+			});
+		});
 
 	function showRegionError() {
 		let toast = document.getElementById('region-toast');
@@ -106,7 +71,7 @@
 		if (selectedMarker) window.addMap.removeLayer(selectedMarker);
 		selectedMarker = createMarker(window.addMap, lat, lon, '#1F7A8C');
 		inputCoordinates = [lat, lon];
-		window.addMap.setView([lat, lon], 14);
+		window.addMap.setView([lat, lon], window.addMap.getZoom());
 
 		document.getElementById('btn-next')?.classList.remove('disabled');
 		const btnAnalyze = document.getElementById('btn-analyze');

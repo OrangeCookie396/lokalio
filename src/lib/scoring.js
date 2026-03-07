@@ -77,7 +77,7 @@ export function idwInterpolate(userLat, userLon, stations, maxStations = 3) {
 	// Distance-based reduction: stations are placed in populated/polluted areas,
 	// so being far from all stations means cleaner air.
 	// At 0km factor=1.0, at 10km ~0.5, at 20km ~0.33, at 50km ~0.17
-	const REF_DIST = 10000;
+	const REF_DIST = 7000;
 	const nearestDist = sorted[0].dist;
 	const reductionFactor = REF_DIST / (REF_DIST + nearestDist);
 

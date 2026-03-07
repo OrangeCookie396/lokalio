@@ -50,15 +50,28 @@ function addCategoryMarker(category, lat, lon, color) {
 	window.allReportMarkers.push(m);
 }
 
-// Highlight one category's markers; pass null to reset all
-window.highlightCategoryMarkers = function(key) {
+function applyMarkerVisibility() {
 	const catMarkers = window.categoryMarkers || {};
-	const highlighted = key ? (catMarkers[key] || []) : null;
-	Object.values(catMarkers).flat().forEach(m => {
-		m.setOpacity(!highlighted || highlighted.includes(m) ? 1 : 0.15);
+	const detailKey = window._detailCategory || null;
+
+	Object.entries(catMarkers).forEach(([cat, markers]) => {
+		markers.forEach(m => {
+			const visible = detailKey !== null
+				? cat === detailKey
+				: (window.categoryVisibility?.[cat] !== false);
+			m.setOpacity(visible ? 1 : 0);
+		});
 	});
-	// User location always stays at full opacity
+
 	if (window.userLocationMarker) window.userLocationMarker.setOpacity(1);
+}
+
+window.applyMarkerVisibility = applyMarkerVisibility;
+
+// Highlight one category's markers (detail view); pass null to reset
+window.highlightCategoryMarkers = function(key) {
+	window._detailCategory = key || null;
+	applyMarkerVisibility();
 };
 
 function parseReportData(input) {

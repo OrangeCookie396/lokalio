@@ -32,12 +32,15 @@ async function searchAddress() {
 
 		switchTabs(2);
 
-		// Clear previous markers
+		// Clear previous markers and state
 		(window.allReportMarkers || []).forEach(m => { try { m.remove(); } catch(e) {} });
 		window.allReportMarkers = [];
 		window.categoryMarkers = {};
+		window.categoryVisibility = {};
+		window._detailCategory = null;
 
 		// User location marker — bigger and distinct color
+		window.reportMap.setView([inputCoordinates[0], inputCoordinates[1]], 13);
 		const userMarker = createMarker(window.reportMap, inputCoordinates[0], inputCoordinates[1], '#ec4899', 52);
 		if (userMarker) {
 			window.allReportMarkers.push(userMarker);

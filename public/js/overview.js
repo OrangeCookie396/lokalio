@@ -246,12 +246,59 @@ function generateReport(data) {
 	container.appendChild(detailPanel);
 
 
+	// ── Category toggle pills over the map ────────────
+	renderCategoryPills(Object.keys(parsed));
+
 	// ── Animate all rings ──────────────────────────────
 	requestAnimationFrame(() => requestAnimationFrame(() => {
 		rings.forEach(({ fill, circ, score }) => {
 			fill.style.strokeDashoffset = circ * (1 - score / 100);
 		});
 	}));
+}
+
+function renderCategoryPills(keys) {
+	if (!window.categoryVisibility) window.categoryVisibility = {};
+	keys.forEach(k => {
+		if (!(k in window.categoryVisibility)) window.categoryVisibility[k] = true;
+	});
+
+	const mapEl = document.getElementById('report-map');
+	let overlay = document.getElementById('cat-pills-overlay');
+	if (!overlay) {
+		overlay = document.createElement('div');
+		overlay.id = 'cat-pills-overlay';
+		mapEl.appendChild(overlay);
+	}
+	overlay.innerHTML = '';
+
+	const parser = new DOMParser();
+
+	keys.forEach(key => {
+		const meta = CATEGORY_META[key];
+		if (!meta) return;
+
+		const pill = document.createElement('button');
+		pill.className = 'cat-pill' + (!window.categoryVisibility[key] ? ' pill-off' : '');
+		pill.style.background = meta.color;
+
+		const iconDoc = parser.parseFromString(meta.icon, 'image/svg+xml');
+		const svgEl = iconDoc.documentElement;
+		pill.appendChild(svgEl);
+
+		const label = document.createElement('span');
+		label.textContent = meta.name;
+		pill.appendChild(label);
+
+		pill.addEventListener('click', e => {
+			e.stopPropagation();
+			window.categoryVisibility[key] = !window.categoryVisibility[key];
+			pill.classList.toggle('pill-off', !window.categoryVisibility[key]);
+			window.applyMarkerVisibility?.();
+		});
+
+		overlay.appendChild(pill);
+	});
 }
 
 function showDetail(cat, meta, key = null) {
